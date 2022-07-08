@@ -17,7 +17,8 @@ const Card = ({
 	amount,
 	start_date,
 	end_date,
-	updateBudget
+	updateBudget,
+	showEditDeleteButton=true
 }) => {
 	const ratio = currentAmount / amount;
 
@@ -94,6 +95,9 @@ const Card = ({
 			<div className={`gap-4 grid grid-cols-2 ${amount ? "px-2" : "px-1 mt-3"} md:gap-5 w-full`}>
 				{amount && (
 					<>
+						{showEditDeleteButton && (
+							<>
+								
 						<div>
 							<Button 
 								bg="bg-blue-50 hover:bg-blue-200"
@@ -126,19 +130,21 @@ const Card = ({
 								title="delete" 
 							/>
 						</div>
-					<div>
-						<Button 
-							bg="bg-gray-100 hover:bg-gray-200"
-							border="border border-gray-600"
-							caps
-							color="text-gray-600"
-							focus="focus:ring-1 focus:ring-offset-1 focus:ring-gray-200"
-							link={BUDGET_DETAIL_PAGE_URL(id)}
-							IconLeft={FaEye}
-							rounded="rounded-lg"
-							title="details" 
-						/>
-					</div>
+							</>
+						)}
+						<div>
+							<Button 
+								bg="bg-gray-100 hover:bg-gray-200"
+								border="border border-gray-600"
+								caps
+								color="text-gray-600"
+								focus="focus:ring-1 focus:ring-offset-1 focus:ring-gray-200"
+								link={BUDGET_DETAIL_PAGE_URL(id)}
+								IconLeft={FaEye}
+								rounded="rounded-lg"
+								title="details" 
+							/>
+						</div>
 					</>
 				)}
 				<div>

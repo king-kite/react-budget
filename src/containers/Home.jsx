@@ -40,12 +40,12 @@ const Dashboard = () => {
 				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
 					{budgets.slice(0, 3).map((budget, index) => (
 						<div key={index}>
-							<BudgetCard {...budget} />
+							<BudgetCard {...budget} showEditDeleteButton={false} />
 						</div>
 					))}
 				</div>
 			</div>
-			{loading & <LoadingPage />}
+			{loading && <LoadingPage />}
 		</div>
 	);
 }
