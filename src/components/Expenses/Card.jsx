@@ -83,7 +83,7 @@ const ExpenseCard = ({
 							})
 						}
 						rounded="rounded-lg"
-						title="Edit Expense"
+						title="Edit"
 					/>
 				</div>
 				<div>
@@ -96,7 +96,7 @@ const ExpenseCard = ({
 						onClick={handleDelete}
 						IconLeft={FaTrash}
 						rounded="rounded-lg"
-						title="delete Expense"
+						title="delete"
 					/>
 				</div>
 			</div>
