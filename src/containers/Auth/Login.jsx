@@ -1,48 +1,62 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { FaLock } from "react-icons/fa"
-import { APP_NAME, BG_IMAGE, LOGO_IMAGE, REGISTER_PAGE_URL } from "../../config"
+import { FaLock } from "react-icons/fa";
+import {
+  APP_NAME,
+  BG_IMAGE,
+  LOGO_IMAGE,
+  REGISTER_PAGE_URL,
+} from "../../config";
 import { close, open } from "../../store/features/alert-slice";
 import { login } from "../../store/features/auth-slice";
 import { Alert, Button, Input } from "../../components/controls";
 
 const Login = () => {
-  const [error, setError] = useState({})
-  const [status, setStatus] = useState("")
-  const [isLoading, setLoading] = useState(false)
+  const [error, setError] = useState({});
+  const [status, setStatus] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
   const message = useSelector((state) => state.alert.message);
   const type = useSelector((state) => state.alert.type);
   const visible = useSelector((state) => state.alert.visible);
 
-  const handleSubmit = useCallback((username, password) => {
-    setError({})
-    setLoading(true)
-    setStatus("pending")
-    setTimeout(() => {
-      let user = localStorage.getItem("user")
-      if (user === null) {
-        return dispatch(open({
-          type: "danger",
-          message: "User does not exist"
-        }))
-      }
-      user = JSON.parse(user)
-      if (username === user.username && password === user.password) {        
-        setStatus("fulfilled")
-        dispatch(login(user))
-      } else {
-        setError({ ...error, detail: "Unable to login with provided credentials!"})
-        setStatus("rejected")
-      }
-      setLoading(false)
-    }, 2000)
-  }, [dispatch]);
+  const handleSubmit = useCallback(
+    (username, password) => {
+      setError({});
+      setLoading(true);
+      setStatus("pending");
+      setTimeout(() => {
+        let user = localStorage.getItem("user");
+        if (user === null)
+          dispatch(
+            open({
+              type: "danger",
+              message: "User does not exist",
+            })
+          );
+        else {
+          user = JSON.parse(user);
+          if (username === user.username && password === user.password) {
+            setStatus("fulfilled");
+            dispatch(login(user));
+          } else {
+            setError({
+              ...error,
+              detail: "Unable to login with provided credentials!",
+            });
+            setStatus("rejected");
+          }
+        }
+        setLoading(false);
+      }, 2000);
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     if (status === "fulfilled") {
@@ -52,15 +66,14 @@ const Login = () => {
           type: "success",
         })
       );
-      setUsername("")
-      setPassword("")
-    } else if (
-      status === "rejected" &&
-      (error?.error || error?.detail)
-    ) {
+      setUsername("");
+      setPassword("");
+    } else if (status === "rejected" && (error?.error || error?.detail)) {
       dispatch(
         open({
-          message: String(error?.error || error?.detail || "A server error occurred!"),
+          message: String(
+            error?.error || error?.detail || "A server error occurred!"
+          ),
           type: "danger",
         })
       );
@@ -109,12 +122,14 @@ const Login = () => {
                 visible={visible}
               />
             </div>
-            <form className="space-y-6"
+            <form
+              className="space-y-6"
               onSubmit={(e) => {
                 e.preventDefault();
-                dispatch(close())
+                dispatch(close());
                 handleSubmit(username, password);
-              }}>
+              }}
+            >
               <div className="rounded-md shadow-sm -space-y-px">
                 <div className="my-4">
                   <Input
