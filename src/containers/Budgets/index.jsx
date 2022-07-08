@@ -185,14 +185,6 @@ const Budgets = () => {
 								) return totalAmount + parseInt(expense.amount)
 							}, 0)
 
-							// const currentAmount = expenses.reduce(
-							// 	(totalAmount, expense) => {
-							// 		if (expense.budgetId === budget.id) 
-							// 			return totalAmount + parseInt(expense.amount);
-							// 	},
-							// 	0
-							// );
-
 							return (
 								<div key={index}>
 									<BudgetCard
