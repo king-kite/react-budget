@@ -161,7 +161,7 @@ const Budgets = () => {
 				</div>
 			</div>
 			{budgets && budgets.length > 0 ? (
-				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
+				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 					{budgets.map((budget, index) => {
 
 						const budgetStartDate = new Date(budget.start_date).getTime();

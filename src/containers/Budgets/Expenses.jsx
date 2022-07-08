@@ -45,7 +45,7 @@ const BudgetExpenses = () => {
 		setTimeout(() => {
 			setModalVisible(false)
 			setData({})
-			dispatch(addExpense({ ...value, budgetId: parseInt(budget.id), budgetName: budget.name }))
+			dispatch(addExpense({ ...value, budgetId: budget.id, budgetName: budget.name }))
 			dispatch(open({
 				type: "success",
 				message: `${toCapitalize(budget.name)} Budget Expense was added successfully!`
@@ -60,7 +60,7 @@ const BudgetExpenses = () => {
 			setModalVisible(false)
 			setData({})
 			setEditMode(false)
-			dispatch(updateExpense({ ...value, budgetId: parseInt(budget.id), budgetName: budget.name }))
+			dispatch(updateExpense({ ...value, budgetId: budget.id, budgetName: budget.name }))
 			dispatch(open({
 				type: "success",
 				message: `${toCapitalize(budget.name)} Budget Expense was updated successfully!`
@@ -81,7 +81,7 @@ const BudgetExpenses = () => {
 				}))
 			} else {
 				const budgets = JSON.parse(storageBudgets)
-				const budget = budgets.find(value => value.id === parseInt(id))
+				const budget = budgets.find(value => value.id === id)
 				if (budget) {
 					setBudget(budget)
 					let storageExpenses = localStorage.getItem("expenses")
@@ -102,7 +102,7 @@ const BudgetExpenses = () => {
 	}, [dispatch, navigate, id])
 
 	useEffect(() => {
-		setBudgetExpenses(expenses.filter(expense => expense.budgetId === parseInt(id)))
+		setBudgetExpenses(expenses.filter(expense => expense.budgetId === id))
 	}, [expenses])
 
 	return (

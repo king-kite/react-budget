@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react"
 import { FaEye, FaPen, FaTrash } from "react-icons/fa"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { BUDGET_DETAIL_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
-import { deleteBudget } from "../../store/features/budgets-slice";
+import { addBudget, deleteBudget } from "../../store/features/budgets-slice";
+import { moveExpenses } from "../../store/features/expenses-slice";
 import { Button } from "../controls"
-import { currencyFormatter, LoadingPage, toCapitalize } from "../../utils";
+import { currencyFormatter, LoadingPage, toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils";
 
 
 const Card = ({ 
@@ -22,13 +23,33 @@ const Card = ({
 
 	const [loading, setLoading] = useState(false)
 
+	const uncategorized = useSelector(state => state.budgets.data.find(budget => budget.id === UNCATEGORIZED_ID))
+	const expenses = useSelector(state => state.expenses.data)
+
 	const dispatch = useDispatch()
+
+	const moveExpensesToUncategorized = useCallback((budgetId) => {
+		if (uncategorized === undefined || uncategorized === null) {
+			dispatch(addBudget({
+				id: UNCATEGORIZED_ID,
+				name: UNCATEGORIZED_NAME,
+			}))
+		}
+		const newExpenses = expenses.filter(expense => {
+			if (expense.budgetId === budgetId) {
+				Object.assign(expense, { budgetId: UNCATEGORIZED_ID, budgetName: UNCATEGORIZED_NAME })
+			}
+			return expense
+		})
+		dispatch(moveExpenses(newExpenses))
+	}, [dispatch, expenses, uncategorized])
 
 	const handleDelete = useCallback(() => {
 		const _delete = window.confirm(`Are you sure you want to delete the ${toCapitalize(name)} Budget?`)
 		if (_delete === true) {
 			setLoading(true)
 			setTimeout(() => {
+				moveExpensesToUncategorized(id)
 				dispatch(deleteBudget(id))
 				dispatch(open({
 					type: 'success',
@@ -37,7 +58,7 @@ const Card = ({
 				setLoading(false)
 			}, 2000)
 		}
-	}, [dispatch, id, name])
+	}, [dispatch, id, name, moveExpensesToUncategorized])
 
 	return (
 		<div 
@@ -50,10 +71,15 @@ const Card = ({
 					{name}
 				</h4>
 				<div className="font-medium flex items-baseline text-base text-gray-500 tracking-wider md:text-lg lg:text-xl">
-					{currencyFormatter.format(currentAmount)} /
-					<span className="font-normal mx-1 text-gray-400 text-sm md:text-base"> 
-						{currencyFormatter.format(amount)}
-					</span>
+					{currencyFormatter.format(currentAmount)} 
+					{amount && (
+						<>
+							<span className="mx-1">/</span>
+							<span className="font-normal text-gray-400 text-sm md:text-base"> 
+								{currencyFormatter.format(amount)}
+							</span>
+						</>
+					)}
 				</div>
 			</div>
 			<p className="capitalize font-medium px-1 text-gray-500 text-sm md:text-base">
@@ -86,7 +112,7 @@ const Card = ({
 							end_date
 						})}
 						rounded="rounded-lg"
-						title="Edit Budget" 
+						title="Edit" 
 					/>
 				</div>
 				<div>
@@ -99,7 +125,7 @@ const Card = ({
 						onClick={handleDelete}
 						IconLeft={FaTrash}
 						rounded="rounded-lg"
-						title="delete budget" 
+						title="delete" 
 					/>
 				</div>
 				<div>
@@ -112,7 +138,7 @@ const Card = ({
 						link={BUDGET_DETAIL_PAGE_URL(id)}
 						IconLeft={FaEye}
 						rounded="rounded-lg"
-						title="view details" 
+						title="details" 
 					/>
 				</div>
 				<div>
@@ -125,7 +151,7 @@ const Card = ({
 						link={BUDGET_EXPENSES_PAGE_URL(id)}
 						IconLeft={FaEye}
 						rounded="rounded-lg"
-						title="View Expenses" 
+						title="Expenses" 
 					/>
 				</div>
 			</div>

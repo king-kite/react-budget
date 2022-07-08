@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { uid } from "uid"
 
 const initialState = {
 	data: []
@@ -9,9 +10,7 @@ const expensesSlice = createSlice({
 	initialState,
 	reducers: {
 		addExpense(state, {payload}) {
-			const firstObj = state.data[0]
-			const id = firstObj ? firstObj.id + 1 : 1
-			state.data.unshift({...payload, id})
+			state.data.unshift({...payload, id: payload.id || uid(16)})
 			localStorage.setItem("expenses", JSON.stringify(state.data))
 		},
 		updateExpense(state, {payload}) {
@@ -29,11 +28,15 @@ const expensesSlice = createSlice({
 		setExpenses(state, {payload}) {
 			state.data = payload
 		},
+		moveExpenses(state, { payload }) {
+			state.data = payload
+			localStorage.setItem("expenses", JSON.stringify(payload))
+		}
 	}
 })
 
 export const {
-	addExpense, updateExpense, deleteExpense, setExpenses
+	addExpense, updateExpense, deleteExpense, setExpenses, moveExpenses
 } = expensesSlice.actions
 
 export default expensesSlice.reducer

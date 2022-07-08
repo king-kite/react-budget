@@ -42,7 +42,7 @@ const ExpenseCard = ({
 
 	return (
 		<div
-			className={`${bg} border border-gray-400 p-4 rounded-lg shadow-lg`}
+			className={`${bg} border border-gray-400 p-4 relative rounded-lg shadow-lg`}
 		>
 			<div className="flex items-baseline justify-between">
 				<h4 className="capitalize font-medium text-base text-gray-500 md:text-lg">

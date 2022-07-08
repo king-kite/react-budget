@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { uid } from "uid"
 
 const initialState = {
 	data: [],
@@ -9,9 +10,7 @@ const budgetsSlice = createSlice({
 	initialState,
 	reducers: {
 		addBudget(state, {payload}) {
-			const firstObj = state.data[0]
-			const id = firstObj ? firstObj.id + 1 : 1
-			state.data.unshift({ ...payload, id: id })
+			state.data.unshift({ ...payload, id: payload.id || uid(16) })
 			localStorage.setItem("budgets", JSON.stringify(state.data))
 		},
 		updateBudget(state, {payload}) {

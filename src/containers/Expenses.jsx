@@ -37,7 +37,7 @@ const AllExpenses = () => {
 	const handleAddExpense = useCallback((value) => {
 		setFormLoading(true)
 		setTimeout(() => {
-			const budget = budgets.find(b => b.id === parseInt(value.budgetId))
+			const budget = budgets.find(b => b.id === value.budgetId)
 			if (budget)
 				Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
 			setModalVisible(false)
@@ -54,7 +54,7 @@ const AllExpenses = () => {
 	const handleUpdateExpense = useCallback((value) => {
 		setFormLoading(true)
 		setTimeout(() => {
-			const budget = budgets.find(b => b.id === parseInt(value.budgetId))
+			const budget = budgets.find(b => b.id === value.budgetId)
 			if (budget)
 				Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
 			setModalVisible(false)

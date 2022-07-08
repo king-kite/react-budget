@@ -30,7 +30,7 @@ const BudgetDetail = () => {
 				}))
 			} else {
 				const budgets = JSON.parse(storageBudgets)
-				const _budget = budgets.find(value => value.id === parseInt(id))
+				const _budget = budgets.find(value => value.id === id)
 				if (_budget) {
 					setBudget(_budget)
 					let storageExpenses = localStorage.getItem("expenses")
