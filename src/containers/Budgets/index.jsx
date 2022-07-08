@@ -200,7 +200,7 @@ const Budgets = () => {
 							// 		if (expense.budgetId === budget.id)
 							// 			return (
 							// 				totalAmount +
-							// 				parseInt(expense.amount)
+							// 				parseFloat(expense.amount)
 							// 			);
 							// 		else return 0;
 							// 	},
@@ -210,15 +210,9 @@ const Budgets = () => {
 							const currentAmount = expenses.reduce(
 								(totalAmount, expense) => {
 									const expenseDate = new Date(expense.date);
-									if (expense.budgetId === budget.id) {
-										console.log("EXPENSE BUDGET ID :>> ", expense.budgetId)
-										console.log("BUDGET ID :::::::::>>", budget.id)
-										return (
-											totalAmount +
-											parseInt(expense.amount)
-										);	
-									}
-									else return 0;
+									if (expense.budgetId === budget.id) 
+										return parseFloat(totalAmount) + parseFloat(expense.amount)
+									else return totalAmount;
 								},
 								0
 							);

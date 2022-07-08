@@ -10,7 +10,7 @@ const UncategorizedBudget = () => {
 		if (
 			expense.budgetId === UNCATEGORIZED_ID
 		) return totalAmount + parseInt(expense.amount)
-		else return 0
+		else return totalAmount
 	}, 0)
 
 	return <BudgetCard 
