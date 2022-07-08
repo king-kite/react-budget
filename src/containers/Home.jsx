@@ -70,21 +70,34 @@ const Dashboard = () => {
 						</div>
 					</div>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
-						{budgets.slice(0, 3).map((budget, index) => (
-							<div key={index}>
-								<BudgetCard
-									{...budget}
-									updateBudget={(value) => {
-										dispatch(open());
-										navigate(BUDGETS_PAGE_URL, {
-											state: {
-												budgetValue: value,
-											},
-										});
-									}}
-								/>
-							</div>
-						))}
+						{budgets.slice(0, 3).map((budget, index) => {
+
+							const currentAmount = expenses.reduce(
+								(totalAmount, expense) => {
+									if (expense.budgetId === budget.id) 
+										return parseFloat(totalAmount) + parseFloat(expense.amount)
+									else return totalAmount;
+								},
+								0
+							);
+
+							return (
+								<div key={index}>
+									<BudgetCard
+										{...budget}
+										currentAmount={currentAmount}
+										updateBudget={(value) => {
+											dispatch(open());
+											navigate(BUDGETS_PAGE_URL, {
+												state: {
+													budgetValue: value,
+												},
+											});
+										}}
+									/>
+								</div>
+							)
+						})}
 					</div>
 					<div className="my-3 max-w-[8rem]">
 						<Button

@@ -209,7 +209,6 @@ const Budgets = () => {
 
 							const currentAmount = expenses.reduce(
 								(totalAmount, expense) => {
-									const expenseDate = new Date(expense.date);
 									if (expense.budgetId === budget.id) 
 										return parseFloat(totalAmount) + parseFloat(expense.amount)
 									else return totalAmount;
