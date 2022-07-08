@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
+import { useLocation } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux";
 import {
 	setBudgets,
@@ -12,6 +13,7 @@ import { Button } from "../../components/controls";
 import {
 	BudgetCard,
 	BudgetForm,
+	TotalCard,
 	UncategorizedBudgetCard,
 } from "../../components/Budgets";
 import { Modal } from "../../components/common";
@@ -28,6 +30,16 @@ const Budgets = () => {
 	const dispatch = useDispatch();
 	const budgets = useSelector((state) => state.budgets.data);
 	const expenses = useSelector((state) => state.expenses.data);
+
+	const { state } = useLocation();
+
+	useEffect(() => {
+		if (state && state?.budgetValue) {
+			setData(state.budgetValue)
+			setModalVisible(true)
+			setEditMode(true)
+		}
+	}, [state])
 
 	useEffect(() => {
 		setLoading(true);
@@ -161,7 +173,10 @@ const Budgets = () => {
 							caps
 							iconSize="text-sm md:text-base"
 							IconLeft={FaPlus}
-							onClick={() => setModalVisible(true)}
+							onClick={() => {
+								setData({})
+								setModalVisible(true)
+							}}
 							padding="px-6 py-3"
 							rounded="rounded-lg"
 							title="add budget"
@@ -169,20 +184,22 @@ const Budgets = () => {
 					</div>
 				</div>
 			</div>
-			{budgets && budgets.length > 0 ? (
+			{(budgets && budgets.length > 0) || (expenses && expenses.length > 0) ? (
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.map((budget, index) => {
-							const budgetStartDate = new Date(budget.start_date).getTime();
-							const budgetEndDate = new Date(budget.end_date).getTime();
+							const budgetStartDate = new Date(budget.start_date)
+							const budgetEndDate = new Date(budget.end_date)
 
 							const currentAmount = expenses.reduce((totalAmount, expense) => {
-								const expenseDate = new Date(expense.date).getTime()
+								const expenseDate = new Date(expense.date)
 								if (
-									expense.budgetId === budget.id &&
-									expenseDate >= budgetStartDate &&
-									expenseDate <= budgetEndDate
+									expense.budgetId === budget.id 
+									// &&
+									// expenseDate >= budgetStartDate &&
+									// expenseDate <= budgetEndDate
 								) return totalAmount + parseInt(expense.amount)
+								else return 0
 							}, 0)
 
 							return (
@@ -208,6 +225,7 @@ const Budgets = () => {
 					</div>
 					<div className="gap-4 grid grid-cols-1 my-4 sm:gap-5 sm:my-5 md:gap-6 md:my-6 md:grid-cols-2 lg:gap-3 lg:my-3 lg:grid-cols-3">
 						<UncategorizedBudgetCard />
+						<TotalCard />
 					</div>
 				</>
 			) : (

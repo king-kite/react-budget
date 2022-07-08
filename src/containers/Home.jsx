@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom"
 import { setBudgets } from "../store/features/budgets-slice";
 import { setExpenses } from "../store/features/expenses-slice";
 import { BUDGETS_PAGE_URL, EXPENSES_PAGE_URL } from "../config"
@@ -15,6 +16,8 @@ const Dashboard = () => {
 	const dispatch  = useDispatch()
 	const budgets = useSelector(state => state.budgets.data)
 	const expenses = useSelector(state => state.expenses.data)
+
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		setLoading(true);
@@ -50,7 +53,13 @@ const Dashboard = () => {
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
 						{budgets.slice(0, 3).map((budget, index) => (
 							<div key={index}>
-								<BudgetCard {...budget} showEditDeleteButton={false} />
+								<BudgetCard {...budget} 
+									updateBudget={(value) => {
+										navigate(BUDGETS_PAGE_URL, {state: {
+											budgetValue: value
+										}})
+									}}
+								/>
 							</div>
 						))}
 					</div>

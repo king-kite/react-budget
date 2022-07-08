@@ -23,7 +23,7 @@ const BudgetDetail = () => {
 
 			const storageBudgets = localStorage.getItem("budgets")
 			if (storageBudgets === null) {
-				navigate(BUDGETS_PAGE_URL)
+				navigate(BUDGETS_PAGE_URL, { replace: true })
 				dispatch(open({
 					message: `Budget with ID \"${id}\" does not exist!`,
 					type: "danger",
@@ -39,7 +39,7 @@ const BudgetDetail = () => {
 						setExpenses(storageExpenses.filter(expense => expense.budgetId === _budget.id))
 					}
 				} else {
-					navigate(BUDGETS_PAGE_URL)
+					navigate(BUDGETS_PAGE_URL, { replace: true })
 					dispatch(open({
 						message: `Budget with ID \"${id}\" does not exist!`,
 						type: "danger",

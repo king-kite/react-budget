@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import Loader from "./Loader";
 
 export const Container = forwardRef(
-  ({ children, link, ...props }, ref) =>
+  ({ children, link, replace=true, ...props }, ref) =>
     link ? (
-      <Link to={link}>
+      <Link to={link} replace={replace}>
         <span {...props}>{children}</span>
       </Link>
     ) : (

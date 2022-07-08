@@ -74,7 +74,7 @@ const BudgetExpenses = () => {
 
 			const storageBudgets = localStorage.getItem("budgets")
 			if (storageBudgets === null) {
-				navigate(BUDGETS_PAGE_URL)
+				navigate(BUDGETS_PAGE_URL, { replace: true })
 				dispatch(open({
 					message: `Budget with ID \"${id}\" does not exist!`,
 					type: "danger",
@@ -102,7 +102,7 @@ const BudgetExpenses = () => {
 							dispatch(setExpenses(storageExpenses))
 						}
 					} else {
-						navigate(BUDGETS_PAGE_URL)
+						navigate(BUDGETS_PAGE_URL, { replace: true })
 						dispatch(open({
 							message: `Budget with ID \"${id}\" does not exist!`,
 							type: "danger",
@@ -136,7 +136,10 @@ const BudgetExpenses = () => {
 									caps
 									iconSize="text-sm sm:text-base md:text-lg"
 									IconLeft={FaPlus}
-									onClick={() => setModalVisible(true)}
+									onClick={() => {
+										setData({})
+										setModalVisible(true)
+									}}
 									padding="px-4 py-3"
 									rounded="rounded-lg"
 									title="add expense"
