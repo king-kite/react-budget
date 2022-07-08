@@ -1,0 +1,137 @@
+import { useCallback, useState } from "react"
+import { FaEye, FaPen, FaTrash } from "react-icons/fa"
+import { useDispatch } from "react-redux"
+import { BUDGET_DETAIL_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
+import { open } from "../../store/features/alert-slice";
+import { deleteBudget } from "../../store/features/budgets-slice";
+import { Button } from "../controls"
+import { currencyFormatter, LoadingPage, toCapitalize } from "../../utils";
+
+
+const Card = ({ 
+	bg="bg-gray-50",
+	id, 
+	name="undefined", 
+	currentAmount=0, 
+	amount,
+	start_date,
+	end_date,
+	updateBudget
+}) => {
+	const ratio = currentAmount / amount;
+
+	const [loading, setLoading] = useState(false)
+
+	const dispatch = useDispatch()
+
+	const handleDelete = useCallback(() => {
+		const _delete = window.confirm(`Are you sure you want to delete the ${toCapitalize(name)} Budget?`)
+		if (_delete === true) {
+			setLoading(true)
+			setTimeout(() => {
+				dispatch(deleteBudget(id))
+				dispatch(open({
+					type: 'success',
+					message: `${toCapitalize(name)} Budget was deleted successfully`
+				}))
+				setLoading(false)
+			}, 2000)
+		}
+	}, [dispatch, id, name])
+
+	return (
+		<div 
+			className={`${
+				ratio < 0.5 ? bg : ratio < 0.75 ? "bg-yellow-200" : "bg-red-100"
+			} border border-gray-300 p-4 relative rounded-lg shadow-lg`}
+		>
+			<div className="flex items-baseline justify-between px-1">
+				<h4 className="capitalize font-medium text-base text-gray-500 md:text-lg">
+					{name}
+				</h4>
+				<div className="font-medium flex items-baseline text-base text-gray-500 tracking-wider md:text-lg lg:text-xl">
+					{currencyFormatter.format(currentAmount)} /
+					<span className="font-normal mx-1 text-gray-400 text-sm md:text-base"> 
+						{currencyFormatter.format(amount)}
+					</span>
+				</div>
+			</div>
+			<p className="capitalize font-medium px-1 text-gray-500 text-sm md:text-base">
+				{new Date(start_date).toDateString()} - {new Date(end_date).toDateString()}
+			</p>
+			<div className="mt-3 mb-5 px-1 w-full">
+				<div className="bg-gray-400 h-[12px] my-1 rounded-lg w-full">
+					<div
+						className={`${
+							ratio < 0.5 ? "bg-primary-500" : ratio < 0.75 ? "bg-yellow-600" : "bg-red-600"
+						} ${ratio > 0.99 ? "rounded-r-lg" : ""} duration-1000 h-[11px] rounded-l-lg transform transition-all`}
+						style={{ width: `${ratio * 100}%` }}
+					/>
+				</div>
+			</div>
+			<div className="gap-4 grid grid-cols-2 px-2 md:gap-5 w-full">
+				<div>
+					<Button 
+						bg="bg-blue-50 hover:bg-blue-200"
+						border="border border-blue-500"
+						caps
+						color="text-blue-700"
+						focus="focus:ring-1 focus:ring-offset-1 focus:ring-blue-100"
+						IconLeft={FaPen}
+						onClick={() => updateBudget({
+							id,
+							name: toCapitalize(name),
+							amount,
+							start_date,
+							end_date
+						})}
+						rounded="rounded-lg"
+						title="Edit Budget" 
+					/>
+				</div>
+				<div>
+					<Button 
+						bg="bg-red-100 hover:bg-red-200"
+						border="border border-red-500"
+						caps
+						color="text-red-500"
+						focus="focus:ring-1 focus:ring-offset-1 focus:ring-red-100"
+						onClick={handleDelete}
+						IconLeft={FaTrash}
+						rounded="rounded-lg"
+						title="delete budget" 
+					/>
+				</div>
+				<div>
+					<Button 
+						bg="bg-gray-100 hover:bg-gray-200"
+						border="border border-gray-600"
+						caps
+						color="text-gray-600"
+						focus="focus:ring-1 focus:ring-offset-1 focus:ring-gray-200"
+						link={BUDGET_DETAIL_PAGE_URL(id)}
+						IconLeft={FaEye}
+						rounded="rounded-lg"
+						title="view details" 
+					/>
+				</div>
+				<div>
+					<Button 
+						bg="bg-green-100 hover:bg-green-200"
+						border="border border-green-600"
+						caps
+						color="text-green-600"
+						focus="focus:ring-1 focus:ring-offset-1 focus:ring-green-200"
+						link={BUDGET_EXPENSES_PAGE_URL(id)}
+						IconLeft={FaEye}
+						rounded="rounded-lg"
+						title="View Expenses" 
+					/>
+				</div>
+			</div>
+			{loading && <LoadingPage className="absolute rounded-lg" />}
+		</div>
+	)
+}
+
+export default Card;
