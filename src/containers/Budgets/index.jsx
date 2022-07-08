@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { useLocation } from "react-router-dom"
+import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
 	setBudgets,
@@ -9,7 +9,7 @@ import {
 } from "../../store/features/budgets-slice";
 import { setExpenses } from "../../store/features/expenses-slice";
 import { open } from "../../store/features/alert-slice";
-import { open as openModal, close } from "../../store/features/modal-slice"
+import { open as openModal, close } from "../../store/features/modal-slice";
 import { Button } from "../../components/controls";
 import {
 	BudgetCard,
@@ -31,16 +31,16 @@ const Budgets = () => {
 	const budgets = useSelector((state) => state.budgets.data);
 	const expenses = useSelector((state) => state.expenses.data);
 
-	const modalVisible = useSelector(state => state.modal.visible)
+	const modalVisible = useSelector((state) => state.modal.visible);
 
 	const { state } = useLocation();
 
 	useEffect(() => {
 		if (state && state?.budgetValue) {
-			setData(state.budgetValue)
-			setEditMode(true)
+			setData(state.budgetValue);
+			setEditMode(true);
 		}
-	}, [state])
+	}, [state]);
 
 	useEffect(() => {
 		setLoading(true);
@@ -175,8 +175,8 @@ const Budgets = () => {
 							iconSize="text-sm md:text-base"
 							IconLeft={FaPlus}
 							onClick={() => {
-								setData({})
-								dispatch(openModal())
+								setData({});
+								dispatch(openModal());
 							}}
 							padding="px-6 py-3"
 							rounded="rounded-lg"
@@ -185,23 +185,26 @@ const Budgets = () => {
 					</div>
 				</div>
 			</div>
-			{(budgets && budgets.length > 0) || (expenses && expenses.length > 0) ? (
+			{(budgets && budgets.length > 0) ||
+			(expenses && expenses.length > 0) ? (
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.map((budget, index) => {
-							const budgetStartDate = new Date(budget.start_date)
-							const budgetEndDate = new Date(budget.end_date)
+							const budgetStartDate = new Date(budget.start_date);
+							const budgetEndDate = new Date(budget.end_date);
 
-							const currentAmount = expenses.reduce((totalAmount, expense) => {
-								const expenseDate = new Date(expense.date)
-								if (
-									expense.budgetId === budget.id 
-									// &&
-									// expenseDate >= budgetStartDate &&
-									// expenseDate <= budgetEndDate
-								) return totalAmount + parseInt(expense.amount)
-								else return 0
-							}, 0)
+							const currentAmount = expenses.reduce(
+								(totalAmount, expense) => {
+									const expenseDate = new Date(expense.date);
+									if (expense.budgetId === budget.id)
+										return (
+											totalAmount +
+											parseInt(expense.amount)
+										);
+									else return 0;
+								},
+								0
+							);
 
 							return (
 								<div key={index}>
@@ -217,7 +220,7 @@ const Budgets = () => {
 											setData(value);
 											setErrors({});
 											setEditMode(true);
-											dispatch(openModal())
+											dispatch(openModal());
 										}}
 									/>
 								</div>

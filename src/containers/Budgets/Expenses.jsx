@@ -186,7 +186,14 @@ const BudgetExpenses = () => {
 								loading={formLoading}
 								onChange={handleChange}
 								onSubmit={editMode ? handleUpdateExpense : handleAddExpense}
-								onReset={() => setData({})}
+								onReset={() => setData(prevState => ({
+									...prevState,
+									title: "",
+									description: "",
+									amount: "",
+									date: "",
+									budgetId: ""
+								}))}
 							/>
 						}
 						description={`Fill in the form below to ${editMode ? "update" : "add"} an expense for the ${toCapitalize(budget.name)} budget...`}

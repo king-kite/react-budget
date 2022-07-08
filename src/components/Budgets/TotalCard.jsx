@@ -4,7 +4,7 @@ import {UNCATEGORIZED_ID, UNCATEGORIZED_NAME} from "../../utils"
 
 const UncategorizedBudget = () => {
 	const budgets = useSelector(state => state.budgets.data)
-	const expenses = useSelector(state => state.expenses.data.filter(expense => expense.budgetId === UNCATEGORIZED_ID))
+	const expenses = useSelector(state => state.expenses.data)
 	if (budgets.length <= 0) return null
 
 	const budgetsAmount = budgets.reduce((totalAmount, budget) => {
