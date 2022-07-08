@@ -87,7 +87,7 @@ const Card = ({
 							className={`${
 								ratio < 0.5 ? "bg-green-500" : ratio < 0.75 ? "bg-yellow-600" : "bg-red-600"
 							} ${ratio > 0.95 ? "rounded-lg" : ""} duration-1000 h-[11px] rounded-l-lg transform transition-all`}
-							style={{ width: `${ratio < 0.01 ? 1 : ratio > 1 ? 100 : ratio * 100}%` }}
+							style={{ width: `${ratio === 0 ? 0 : ratio < 0.01 ? 1 : ratio > 1 ? 100 : ratio * 100}%` }}
 						/>
 					</div>
 				</div>

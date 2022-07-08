@@ -173,25 +173,25 @@ const Budgets = () => {
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.map((budget, index) => {
-							// const budgetStartDate = new Date(budget.start_date).getTime();
-							// const budgetEndDate = new Date(budget.end_date).getTime();
+							const budgetStartDate = new Date(budget.start_date).getTime();
+							const budgetEndDate = new Date(budget.end_date).getTime();
 
-							// const currentAmount = expenses.reduce((totalAmount, expense) => {
-							// 	const expenseDate = new Date(expense.date).toDateString()
-							// 	if (
-							// 		expense.budgetId === budget.id &&
-							// 		expenseDate >= budgetStartDate &&
-							// 		expenseDate <= budgetEndDate
-							// 	) return totalAmount + expense.amount
-							// }, 0)
+							const currentAmount = expenses.reduce((totalAmount, expense) => {
+								const expenseDate = new Date(expense.date).getTime()
+								if (
+									expense.budgetId === budget.id &&
+									expenseDate >= budgetStartDate &&
+									expenseDate <= budgetEndDate
+								) return totalAmount + parseInt(expense.amount)
+							}, 0)
 
-							const currentAmount = expenses.reduce(
-								(totalAmount, expense) => {
-									if (expense.budgetId === budget.id) 
-										return totalAmount + parseInt(expense.amount);
-								},
-								0
-							);
+							// const currentAmount = expenses.reduce(
+							// 	(totalAmount, expense) => {
+							// 		if (expense.budgetId === budget.id) 
+							// 			return totalAmount + parseInt(expense.amount);
+							// 	},
+							// 	0
+							// );
 
 							return (
 								<div key={index}>
