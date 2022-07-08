@@ -82,8 +82,8 @@ const Topbar = () => {
 					<li className="h-full w-full">
 						<Link 
 							onClick={() => {
-								navigate(LOGIN_PAGE_URL, { replace: true })
 								dispatch(logout())
+								navigate(LOGIN_PAGE_URL, { replace: true })
 							}}
 							to="#"
 							className="bg-white block capitalize cursor-pointer p-2 text-sm w-full hover:bg-gray-200"
