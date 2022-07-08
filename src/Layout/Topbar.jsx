@@ -82,7 +82,6 @@ const Topbar = () => {
 					<li className="h-full w-full">
 						<Link 
 							onClick={() => {
-								localStorage.removeItem('user')
 								navigate(LOGIN_PAGE_URL, { replace: true })
 								dispatch(logout())
 							}}
