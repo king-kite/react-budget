@@ -9,6 +9,7 @@ import { Authenticated, CheckAuth, NotAuthenticated } from "./utils";
 import NotFoundPage from "./pages/404";
 
 import LoginPage from "./pages/auth/login";
+import RegisterPage from "./pages/auth/register";
 import HomePage from "./pages"
 import BudgetsPage from "./pages/budgets"
 import BudgetDetailPage from "./pages/budgets/detail"
@@ -24,6 +25,7 @@ const AppRoutes = () => (
 		<Route element={<CheckAuth />}>
 			<Route element={<NotAuthenticated />}>
 				<Route path={routes.LOGIN_PAGE_URL} element={<LoginPage />} />
+				<Route path={routes.REGISTER_PAGE_URL} element={<RegisterPage />} />
 			</Route>
 
 			<Route element={<Authenticated />}>

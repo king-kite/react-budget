@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaLock } from "react-icons/fa"
-import { APP_NAME, BG_IMAGE, LOGO_IMAGE, REGISTER_PAGE_URL } from "../../config"
+import { APP_NAME, BG_IMAGE, LOGO_IMAGE, LOGIN_PAGE_URL } from "../../config"
 import { close, open } from "../../store/features/alert-slice";
-import { login } from "../../store/features/auth-slice";
 import { Alert, Button, Input } from "../../components/controls";
 
 const Login = () => {
@@ -20,52 +19,35 @@ const Login = () => {
   const type = useSelector((state) => state.alert.type);
   const visible = useSelector((state) => state.alert.visible);
 
+  const navigate = useNavigate()
+
   const handleSubmit = useCallback((username, password) => {
     setError({})
     setLoading(true)
     setStatus("pending")
     setTimeout(() => {
-      let user = localStorage.getItem("user")
-      if (user === null) {
-        return dispatch(open({
-          type: "danger",
-          message: "User does not exist"
-        }))
+      if (username === null || username === undefined) {
+        setError(prevState => ({...prevState, username: "Username is required"}))
       }
-      user = JSON.parse(user)
-      if (username === user.username && password === user.password) {        
-        setStatus("fulfilled")
-        dispatch(login(user))
-      } else {
-        setError({ ...error, detail: "Unable to login with provided credentials!"})
-        setStatus("rejected")
+      if (password === null || password === undefined) {
+        setError(prevState => ({...prevState, password: "Username is required"}))
+      }
+      if (username && password) {
+        localStorage.setItem("user", JSON.stringify({username, password}))
+        dispatch(
+          open({
+            message: "Registration was successful!",
+            type: "success",
+          })
+        );
+        setUsername("")
+        setPassword("")
+        setError({})
+        navigate(LOGIN_PAGE_URL)
       }
       setLoading(false)
     }, 2000)
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (status === "fulfilled") {
-      dispatch(
-        open({
-          message: "Logged in Successfully!",
-          type: "success",
-        })
-      );
-      setUsername("")
-      setPassword("")
-    } else if (
-      status === "rejected" &&
-      (error?.error || error?.detail)
-    ) {
-      dispatch(
-        open({
-          message: String(error?.error || error?.detail || "A server error occurred!"),
-          type: "danger",
-        })
-      );
-    }
-  }, [dispatch, status, error]);
+  }, [dispatch, navigate]);
 
   return (
     <div className="bg-gray-200 flex flex-row-reverse min-h-screen items-center justify-between w-full">
@@ -96,8 +78,8 @@ const Login = () => {
               src={LOGO_IMAGE}
               alt={APP_NAME}
             />
-            <h2 className="my-3 text-center text-lg font-extrabold text-gray-900 md:text-xl lg:text-2xl">
-              Sign In
+            <h2 className="capitalize my-3 text-center text-lg font-extrabold text-gray-900 md:text-xl lg:text-2xl">
+              Sign Up
             </h2>
           </div>
           <div className="px-10 space-y-4">
@@ -155,11 +137,11 @@ const Login = () => {
               <div className="flex items-center justify-between">
                 <div className="text-sm">
                   <Link
-                    to={REGISTER_PAGE_URL}
+                    to={LOGIN_PAGE_URL}
                     className="font-medium text-primary-600 hover:text-primary-500"
                   >
                     {" "}
-                    Need an account? Sign Up{" "}
+                    Already have an account? Sign In{" "}
                   </Link>
                 </div>
               </div>
@@ -177,7 +159,7 @@ const Login = () => {
                   loading={isLoading}
                   padding="py-2 px-4"
                   rounded="rounded-md"
-                  title="Sign In"
+                  title="Sign Up"
                   titleSize="text-sm"
                 />
               </div>
