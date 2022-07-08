@@ -18,6 +18,8 @@ const UncategorizedBudget = () => {
 		currentAmount={currentAmount}
 		id={UNCATEGORIZED_ID}
 		name={UNCATEGORIZED_NAME}
+		showDetailButton={false}
+		showEditButton={false}
 	/>
 }
 

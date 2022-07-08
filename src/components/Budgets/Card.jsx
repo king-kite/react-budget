@@ -25,6 +25,7 @@ const Card = ({
 	updateBudget,
 	showButtons = true,
 	showEditButton = true,
+	showDetailButton = true
 }) => {
 	const ratio = currentAmount / amount;
 
@@ -34,10 +35,11 @@ const Card = ({
 
 	const dispatch = useDispatch();
 
-	const deleteCategorizedExpenses = useCallback(() => {
+	const deleteUncategorizedExpenses = useCallback(() => {
 		const newExpenses = expenses.filter(
-			(expense) => expense.id !== UNCATEGORIZED_ID
+			(expense) => expense.budgetId !== UNCATEGORIZED_ID
 		);
+		console.log("NEW EXPENSES :>> ", newExpenses)
 		dispatch(moveExpenses(newExpenses));
 	}, [dispatch, expenses]);
 
@@ -66,14 +68,15 @@ const Card = ({
 		if (_delete === true) {
 			setLoading(true);
 			setTimeout(() => {
-				if (id !== UNCATEGORIZED_ID) {
+				if (id === UNCATEGORIZED_ID) deleteUncategorizedExpenses();
+				else {
 					moveExpensesToUncategorized(id);
 					dispatch(deleteBudget(id));
-				} else deleteCategorizedExpenses();
+				}
 				dispatch(
 					open({
 						type: "success",
-						message: `${toCapitalize(name)} Budget was deleted successfully`,
+						message: `${toCapitalize(name)} ${id === UNCATEGORIZED_ID ? "expenses were" : "budget was"} deleted successfully`,
 					})
 				);
 				setLoading(false);
@@ -185,19 +188,22 @@ const Card = ({
 								title="delete"
 							/>
 						</div>
-					<div>
-						<Button
-							bg="bg-gray-100 hover:bg-gray-200"
-							border="border border-gray-600"
-							caps
-							color="text-gray-600"
-							focus="focus:ring-1 focus:ring-offset-1 focus:ring-gray-200"
-							link={BUDGET_DETAIL_PAGE_URL(id)}
-							IconLeft={FaEye}
-							rounded="rounded-lg"
-							title="details"
-						/>
-					</div>
+					{showDetailButton && (
+
+						<div>
+							<Button
+								bg="bg-gray-100 hover:bg-gray-200"
+								border="border border-gray-600"
+								caps
+								color="text-gray-600"
+								focus="focus:ring-1 focus:ring-offset-1 focus:ring-gray-200"
+								link={BUDGET_DETAIL_PAGE_URL(id)}
+								IconLeft={FaEye}
+								rounded="rounded-lg"
+								title="details"
+							/>
+						</div>
+					)}
 					<div>
 						<Button
 							bg="bg-green-100 hover:bg-green-200"

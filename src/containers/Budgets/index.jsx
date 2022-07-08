@@ -191,17 +191,33 @@ const Budgets = () => {
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.map((budget, index) => {
-							const budgetStartDate = new Date(budget.start_date);
-							const budgetEndDate = new Date(budget.end_date);
+							// const budgetStartDate = new Date(budget.start_date);
+							// const budgetEndDate = new Date(budget.end_date);
+
+							// const currentAmount = expenses.reduce(
+							// 	(totalAmount, expense) => {
+							// 		const expenseDate = new Date(expense.date);
+							// 		if (expense.budgetId === budget.id)
+							// 			return (
+							// 				totalAmount +
+							// 				parseInt(expense.amount)
+							// 			);
+							// 		else return 0;
+							// 	},
+							// 	0
+							// );
 
 							const currentAmount = expenses.reduce(
 								(totalAmount, expense) => {
 									const expenseDate = new Date(expense.date);
-									if (expense.budgetId === budget.id)
+									if (expense.budgetId === budget.id) {
+										console.log("EXPENSE BUDGET ID :>> ", expense.budgetId)
+										console.log("BUDGET ID :::::::::>>", budget.id)
 										return (
 											totalAmount +
 											parseInt(expense.amount)
-										);
+										);	
+									}
 									else return 0;
 								},
 								0
@@ -251,7 +267,13 @@ const Budgets = () => {
 						errors={errors}
 						loading={formLoading}
 						onChange={handleChange}
-						onReset={() => setData({})}
+						onReset={() => setData(prevState => ({
+							...prevState,
+							name: "",
+							start_date: "",
+							end_date: "",
+							amount: ""
+						}))}
 						onSubmit={(value) => {
 							setErrors({});
 							if (editMode === true) handleUpdateBudget(value);
