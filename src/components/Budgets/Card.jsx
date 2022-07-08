@@ -130,7 +130,7 @@ const Card = ({
 									: "bg-red-600"
 							} ${
 								ratio > 0.95 ? "rounded-lg" : ""
-							} duration-1000 h-[11px] rounded-l-lg transform transition-all`}
+							} duration-1000 h-full rounded-l-lg transform transition-all`}
 							style={{
 								width: `${
 									ratio === 0
