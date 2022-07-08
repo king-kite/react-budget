@@ -6,9 +6,9 @@ import {
 	FaMoneyBillWave,
 	FaMoneyCheck,
 	FaReceipt,
+	FaSmileBeam,
 	FaTable,
 	FaThLarge,
-	FaRocket,
 } from "react-icons/fa";
 import { APP_NAME, LOGO_IMAGE } from "../config";
 import * as routes from "../config/routes";
@@ -36,7 +36,7 @@ const links = [
 		title: "income",
 	},
 	{
-		Icon: FaRocket,
+		Icon: FaSmileBeam,
 		href: "#",
 		title: "goals",
 	},
