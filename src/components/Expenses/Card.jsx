@@ -16,6 +16,7 @@ const ExpenseCard = ({
 	description,
 	title,
 	updateExpense,
+	showEditDeleteButton=true
 }) => {
 	const [loading, setLoading] = useState(false);
 
@@ -63,43 +64,45 @@ const ExpenseCard = ({
 			</span>
 			<p className="my-1 text-gray-500 text-sm md:text-base">{description}</p>
 
-			<div className="gap-4 grid grid-cols-2 pt-3 md:gap-5 w-full">
-				<div>
-					<Button
-						bg="bg-blue-50 hover:bg-blue-200"
-						border="border border-blue-500"
-						caps
-						color="text-blue-700"
-						focus="focus:ring-1 focus:ring-offset-1 focus:ring-blue-100"
-						IconLeft={FaPen}
-						onClick={() =>
-							updateExpense({
-								id,
-								title: toCapitalize(title),
-								budgetId,
-								date,
-								description,
-								amount,
-							})
-						}
-						rounded="rounded-lg"
-						title="Edit"
-					/>
+			{showEditDeleteButton && (
+				<div className="gap-4 grid grid-cols-2 pt-3 md:gap-5 w-full">
+					<div>
+						<Button
+							bg="bg-blue-50 hover:bg-blue-200"
+							border="border border-blue-500"
+							caps
+							color="text-blue-700"
+							focus="focus:ring-1 focus:ring-offset-1 focus:ring-blue-100"
+							IconLeft={FaPen}
+							onClick={() =>
+								updateExpense({
+									id,
+									title: toCapitalize(title),
+									budgetId,
+									date,
+									description,
+									amount,
+								})
+							}
+							rounded="rounded-lg"
+							title="Edit"
+						/>
+					</div>
+					<div>
+						<Button
+							bg="bg-red-100 hover:bg-red-200"
+							border="border border-red-500"
+							caps
+							color="text-red-500"
+							focus="focus:ring-1 focus:ring-offset-1 focus:ring-red-100"
+							onClick={handleDelete}
+							IconLeft={FaTrash}
+							rounded="rounded-lg"
+							title="delete"
+						/>
+					</div>
 				</div>
-				<div>
-					<Button
-						bg="bg-red-100 hover:bg-red-200"
-						border="border border-red-500"
-						caps
-						color="text-red-500"
-						focus="focus:ring-1 focus:ring-offset-1 focus:ring-red-100"
-						onClick={handleDelete}
-						IconLeft={FaTrash}
-						rounded="rounded-lg"
-						title="delete"
-					/>
-				</div>
-			</div>
+			)}
 			{loading && <LoadingPage className="absolute rounded-lg" />}
 		</div>
 	);
