@@ -2,6 +2,12 @@ import { forwardRef } from "react";
 import {
 	FaArrowCircleRight,
 	FaArrowCircleLeft,
+	FaChartLine,
+	FaMoneyBillWave,
+	FaMoneyCheck,
+	FaReceipt,
+	FaTable,
+	FaThLarge,
 	FaRocket,
 } from "react-icons/fa";
 import { APP_NAME, LOGO_IMAGE } from "../config";
@@ -10,22 +16,22 @@ import AppLink from "./Link";
 
 const links = [
 	{
-		Icon: FaRocket,
+		Icon: FaThLarge,
 		href: routes.HOME_PAGE_URL,
 		title: "dashboard",
 	},
 	{
-		Icon: FaRocket,
+		Icon: FaTable,
 		href: routes.BUDGETS_PAGE_URL,
 		title: "budgets",
 	},
 	{
-		Icon: FaRocket,
+		Icon: FaMoneyBillWave,
 		href: routes.EXPENSES_PAGE_URL,
 		title: "expenses",
 	},
 	{
-		Icon: FaRocket,
+		Icon: FaMoneyCheck,
 		href: routes.INCOME_PAGE_URL,
 		title: "income",
 	},
@@ -35,12 +41,12 @@ const links = [
 		title: "goals",
 	},
 	{
-		Icon: FaRocket,
+		Icon: FaReceipt,
 		href: "#",
 		title: "receipts",
 	},
 	{
-		Icon: FaRocket,
+		Icon: FaChartLine,
 		href: "#",
 		title: "literacy",
 	},
