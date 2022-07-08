@@ -9,7 +9,11 @@ import {
 import { setExpenses } from "../../store/features/expenses-slice";
 import { open } from "../../store/features/alert-slice";
 import { Button } from "../../components/controls";
-import { BudgetCard, BudgetForm, UncategorizedBudgetCard } from "../../components/Budgets";
+import {
+	BudgetCard,
+	BudgetForm,
+	UncategorizedBudgetCard,
+} from "../../components/Budgets";
 import { Modal } from "../../components/common";
 import { LoadingPage } from "../../utils";
 
@@ -57,7 +61,9 @@ const Budgets = () => {
 			setFormLoading(true);
 			setTimeout(() => {
 				let isValid = true;
-				const exists = budgets.find((budget) => budget.name === value.name);
+				const exists = budgets.find(
+					(budget) => budget.name === value.name
+				);
 				if (exists) {
 					setErrors((prevState) => ({
 						...prevState,
@@ -100,7 +106,8 @@ const Budgets = () => {
 			setTimeout(() => {
 				let isValid = true;
 				const exists = budgets.find(
-					(budget) => budget.name === value.name && budget.id !== value.id
+					(budget) =>
+						budget.name === value.name && budget.id !== value.id
 				);
 				if (exists) {
 					setErrors((prevState) => ({
@@ -143,7 +150,9 @@ const Budgets = () => {
 			<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 				<div className="my-2">
 					<h3 className="top-heading">budgets</h3>
-					<p className="top-description">An overview of your budgets</p>
+					<p className="top-description">
+						An overview of your budgets
+					</p>
 				</div>
 				<div className="flex items-center justify-center my-2">
 					<div>
@@ -164,7 +173,6 @@ const Budgets = () => {
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.map((budget, index) => {
-
 							// const budgetStartDate = new Date(budget.start_date).getTime();
 							// const budgetEndDate = new Date(budget.end_date).getTime();
 
@@ -177,16 +185,24 @@ const Budgets = () => {
 							// 	) return totalAmount + expense.amount
 							// }, 0)
 
-							const currentAmount = expenses.reduce((totalAmount, expense) => {
-								if (expense.budgetId === budget.id) return totalAmount + expense.amount
-							}, 0)
+							const currentAmount = expenses.reduce(
+								(totalAmount, expense) => {
+									if (expense.budgetId === budget.id) 
+										return totalAmount + parseInt(expense.amount);
+								},
+								0
+							);
 
 							return (
 								<div key={index}>
 									<BudgetCard
 										{...budget}
-										bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
-										expenses={currentAmount}
+										bg={
+											(index + 1) % 2 === 0
+												? "bg-white"
+												: "bg-gray-100"
+										}
+										currentAmount={currentAmount}
 										updateBudget={(value) => {
 											setData(value);
 											setErrors({});
@@ -202,7 +218,6 @@ const Budgets = () => {
 						<UncategorizedBudgetCard />
 					</div>
 				</>
-
 			) : (
 				<div className="flex flex-col justify-center items-center my-4 py-4 rounded-lg">
 					<div className="my-4">

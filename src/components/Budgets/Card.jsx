@@ -82,12 +82,12 @@ const Card = ({
 			)}
 			{amount && (
 				<div className="mt-3 mb-5 px-1 w-full">
-					<div className="bg-gray-400 h-[12px] my-1 rounded-lg w-full">
+					<div className="bg-gray-300 h-[12px] my-1 rounded-lg w-full">
 						<div
 							className={`${
-								ratio < 0.5 ? "bg-primary-500" : ratio < 0.75 ? "bg-yellow-600" : "bg-red-600"
+								ratio < 0.5 ? "bg-green-500" : ratio < 0.75 ? "bg-yellow-600" : "bg-red-600"
 							} ${ratio > 0.95 ? "rounded-lg" : ""} duration-1000 h-[11px] rounded-l-lg transform transition-all`}
-							style={{ width: `${ratio * 100}%` }}
+							style={{ width: `${ratio < 0.01 ? 1 : ratio > 1 ? 100 : ratio * 100}%` }}
 						/>
 					</div>
 				</div>
