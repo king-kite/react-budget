@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"
 import { setBudgets } from "../store/features/budgets-slice";
 import { setExpenses } from "../store/features/expenses-slice";
+import { open } from "../store/features/modal-slice";
 import { BUDGETS_PAGE_URL, EXPENSES_PAGE_URL } from "../config"
 import { Cards, Top } from "../components/Home";
 import { BudgetCard } from "../components/Budgets";
@@ -55,6 +56,7 @@ const Dashboard = () => {
 							<div key={index}>
 								<BudgetCard {...budget} 
 									updateBudget={(value) => {
+										dispatch(open())
 										navigate(BUDGETS_PAGE_URL, {state: {
 											budgetValue: value
 										}})

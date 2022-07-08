@@ -9,6 +9,7 @@ import {
 } from "../../store/features/budgets-slice";
 import { setExpenses } from "../../store/features/expenses-slice";
 import { open } from "../../store/features/alert-slice";
+import { open as openModal, close } from "../../store/features/modal-slice"
 import { Button } from "../../components/controls";
 import {
 	BudgetCard,
@@ -25,18 +26,18 @@ const Budgets = () => {
 	const [loading, setLoading] = useState(true);
 	const [formLoading, setFormLoading] = useState(false);
 	const [editMode, setEditMode] = useState(false);
-	const [modalVisible, setModalVisible] = useState(false);
 
 	const dispatch = useDispatch();
 	const budgets = useSelector((state) => state.budgets.data);
 	const expenses = useSelector((state) => state.expenses.data);
+
+	const modalVisible = useSelector(state => state.modal.visible)
 
 	const { state } = useLocation();
 
 	useEffect(() => {
 		if (state && state?.budgetValue) {
 			setData(state.budgetValue)
-			setModalVisible(true)
 			setEditMode(true)
 		}
 	}, [state])
@@ -103,7 +104,7 @@ const Budgets = () => {
 						})
 					);
 
-					setModalVisible(false);
+					dispatch(close());
 					setData({});
 				}
 				setFormLoading(false);
@@ -148,7 +149,7 @@ const Budgets = () => {
 						})
 					);
 
-					setModalVisible(false);
+					dispatch(close());
 					setData({});
 				}
 				setFormLoading(false);
@@ -175,7 +176,7 @@ const Budgets = () => {
 							IconLeft={FaPlus}
 							onClick={() => {
 								setData({})
-								setModalVisible(true)
+								dispatch(openModal())
 							}}
 							padding="px-6 py-3"
 							rounded="rounded-lg"
@@ -216,7 +217,7 @@ const Budgets = () => {
 											setData(value);
 											setErrors({});
 											setEditMode(true);
-											setModalVisible(true);
+											dispatch(openModal())
 										}}
 									/>
 								</div>
@@ -238,7 +239,7 @@ const Budgets = () => {
 				</div>
 			)}
 			<Modal
-				close={() => setModalVisible(false)}
+				close={() => dispatch(close())}
 				containerClass=""
 				component={
 					<BudgetForm
