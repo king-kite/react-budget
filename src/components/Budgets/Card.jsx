@@ -3,7 +3,7 @@ import { FaEye, FaPen, FaTrash } from "react-icons/fa"
 import { useDispatch, useSelector } from "react-redux"
 import { BUDGET_DETAIL_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
-import { addBudget, deleteBudget } from "../../store/features/budgets-slice";
+import { deleteBudget } from "../../store/features/budgets-slice";
 import { moveExpenses } from "../../store/features/expenses-slice";
 import { Button } from "../controls"
 import { currencyFormatter, LoadingPage, toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils";
@@ -23,26 +23,18 @@ const Card = ({
 
 	const [loading, setLoading] = useState(false)
 
-	const uncategorized = useSelector(state => state.budgets.data.find(budget => budget.id === UNCATEGORIZED_ID))
 	const expenses = useSelector(state => state.expenses.data)
 
 	const dispatch = useDispatch()
 
 	const moveExpensesToUncategorized = useCallback((budgetId) => {
-		if (uncategorized === undefined || uncategorized === null) {
-			dispatch(addBudget({
-				id: UNCATEGORIZED_ID,
-				name: UNCATEGORIZED_NAME,
-			}))
-		}
-		const newExpenses = expenses.filter(expense => {
-			if (expense.budgetId === budgetId) {
-				Object.assign(expense, { budgetId: UNCATEGORIZED_ID, budgetName: UNCATEGORIZED_NAME })
-			}
+		const newExpenses = expenses.map(expense => {
+			if (expense.budgetId === budgetId) 
+				return { ...expense, budgetName: UNCATEGORIZED_NAME, budgetId: UNCATEGORIZED_ID }
 			return expense
 		})
 		dispatch(moveExpenses(newExpenses))
-	}, [dispatch, expenses, uncategorized])
+	}, [dispatch, expenses])
 
 	const handleDelete = useCallback(() => {
 		const _delete = window.confirm(`Are you sure you want to delete the ${toCapitalize(name)} Budget?`)
