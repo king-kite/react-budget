@@ -5,6 +5,6 @@ export { default as toCapitalize } from "./toCapitalize";
 export { default as currencyFormatter } from "./currencyFormatter"
 
 export const UNCATEGORIZED_ID = "uncategorized"
-export const UNCATEGORIZED_NAME = "UNCATEGORIZED"
+export const UNCATEGORIZED_NAME = "Uncategorized"
 
 export * from "./protections";

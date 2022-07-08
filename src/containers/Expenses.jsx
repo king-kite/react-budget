@@ -7,7 +7,7 @@ import { setExpenses, addExpense, updateExpense } from "../store/features/expens
 import { Button } from "../components/controls"
 import { Modal } from "../components/common";
 import { ExpenseCard, ExpenseForm } from "../components/Expenses"
-import { LoadingPage, toCapitalize } from "../utils"
+import { LoadingPage, toCapitalize, UNCATEGORIZED_ID,UNCATEGORIZED_NAME } from "../utils"
 
 const AllExpenses = () => {
 	const dispatch = useDispatch();
@@ -37,9 +37,20 @@ const AllExpenses = () => {
 	const handleAddExpense = useCallback((value) => {
 		setFormLoading(true)
 		setTimeout(() => {
-			const budget = budgets.find(b => b.id === value.budgetId)
-			if (budget)
-				Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
+			if (value.budgetId === UNCATEGORIZED_ID)
+				Object.assign(value, {budgetName: UNCATEGORIZED_NAME, budgetId: UNCATEGORIZED_ID})
+			else {
+				const budget = budgets.find(b => b.id === value.budgetId)
+				if (budget)
+					Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
+				else {
+					setFormLoading(false)
+					return setErrors((prevState) => ({
+						...prevState, 
+						budgetId: `Budget with ID ${value.budgetId} was not found`
+					}))
+				}
+			}
 			setModalVisible(false)
 			setData({})
 			dispatch(addExpense(value))
@@ -54,9 +65,17 @@ const AllExpenses = () => {
 	const handleUpdateExpense = useCallback((value) => {
 		setFormLoading(true)
 		setTimeout(() => {
-			const budget = budgets.find(b => b.id === value.budgetId)
-			if (budget)
-				Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
+			if (value.budgetId === UNCATEGORIZED_ID)
+				Object.assign(value, {budgetName: UNCATEGORIZED_NAME, budgetId: UNCATEGORIZED_ID})
+			else {
+				const budget = budgets.find(b => b.id === value.budgetId)
+				if (budget)
+					Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
+				else return setErrors((prevState) => ({
+					...prevState, 
+					budgetId: `Budget with ID ${value.budgetId} was not found`
+				}))
+			}
 			setModalVisible(false)
 			setEditMode(false)
 			setData({})

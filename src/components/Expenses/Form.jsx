@@ -1,6 +1,6 @@
 import { FaCheckCircle, FaEraser } from "react-icons/fa"
 import { Button, Input, Select, Textarea } from "../controls"
-import { toCapitalize } from "../../utils"
+import { toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
 
 const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }) => (
 	<form 
@@ -24,7 +24,10 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }
 						labelColor="text-gray-500"
 						labelSize="text-sm tracking-wider md:text-base"
 						onChange={onChange}
-						options={budgets.map(budget => ({ title: toCapitalize(budget.name), value: budget.id }))}
+						options={[
+							{ title: UNCATEGORIZED_NAME, value: UNCATEGORIZED_ID },
+							...budgets.map(budget => ({ title: toCapitalize(budget.name), value: budget.id }))
+						]}
 						name="budgetId"
 						padding="px-4 py-3"
 						placeholder="Select Budget"

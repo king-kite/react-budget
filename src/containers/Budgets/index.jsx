@@ -9,7 +9,7 @@ import {
 import { setExpenses } from "../../store/features/expenses-slice";
 import { open } from "../../store/features/alert-slice";
 import { Button } from "../../components/controls";
-import { BudgetCard, BudgetForm } from "../../components/Budgets";
+import { BudgetCard, BudgetForm, UncategorizedBudgetCard } from "../../components/Budgets";
 import { Modal } from "../../components/common";
 import { LoadingPage } from "../../utils";
 
@@ -161,39 +161,48 @@ const Budgets = () => {
 				</div>
 			</div>
 			{budgets && budgets.length > 0 ? (
-				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
-					{budgets.map((budget, index) => {
+				<>
+					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
+						{budgets.map((budget, index) => {
 
-						const budgetStartDate = new Date(budget.start_date).getTime();
-						const budgetEndDate = new Date(budget.end_date).getTime();
+							// const budgetStartDate = new Date(budget.start_date).getTime();
+							// const budgetEndDate = new Date(budget.end_date).getTime();
 
-						const currentAmount = expenses.reduce((totalAmount, expense) => {
-							const expenseDate = new Date(expense.date).toDateString()
-							if (
-								expense.budgetId === budget.id &&
-								expenseDate >= budgetStartDate &&
-								expenseDate <= budgetEndDate
-							) return totalAmount + expense.amount
-						}, 0)
+							// const currentAmount = expenses.reduce((totalAmount, expense) => {
+							// 	const expenseDate = new Date(expense.date).toDateString()
+							// 	if (
+							// 		expense.budgetId === budget.id &&
+							// 		expenseDate >= budgetStartDate &&
+							// 		expenseDate <= budgetEndDate
+							// 	) return totalAmount + expense.amount
+							// }, 0)
 
+							const currentAmount = expenses.reduce((totalAmount, expense) => {
+								if (expense.budgetId === budget.id) return totalAmount + expense.amount
+							}, 0)
 
-						return (
-							<div key={index}>
-								<BudgetCard
-									{...budget}
-									bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
-									expenses={currentAmount}
-									updateBudget={(value) => {
-										setData(value);
-										setErrors({});
-										setEditMode(true);
-										setModalVisible(true);
-									}}
-								/>
-							</div>
-						);
-					})}
-				</div>
+							return (
+								<div key={index}>
+									<BudgetCard
+										{...budget}
+										bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
+										expenses={currentAmount}
+										updateBudget={(value) => {
+											setData(value);
+											setErrors({});
+											setEditMode(true);
+											setModalVisible(true);
+										}}
+									/>
+								</div>
+							);
+						})}
+					</div>
+					<div className="gap-4 grid grid-cols-1 my-4 sm:gap-5 sm:my-5 md:gap-6 md:my-6 md:grid-cols-2 lg:gap-3 lg:my-3 lg:grid-cols-3">
+						<UncategorizedBudgetCard />
+					</div>
+				</>
+
 			) : (
 				<div className="flex flex-col justify-center items-center my-4 py-4 rounded-lg">
 					<div className="my-4">

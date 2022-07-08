@@ -6,7 +6,7 @@ import { BUDGETS_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config"
 import { open } from "../../store/features/alert-slice";
 import { InfoComp } from "../../components/common";
 import { Button } from "../../components/controls"
-import { LoadingPage, toCapitalize } from "../../utils"
+import { LoadingPage, toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
 
 const BudgetDetail = () => {
 	const [budget, setBudget] = useState(null)

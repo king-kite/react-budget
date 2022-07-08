@@ -8,7 +8,7 @@ import { setExpenses, addExpense, updateExpense } from "../../store/features/exp
 import { Button } from "../../components/controls"
 import { Modal } from "../../components/common";
 import { ExpenseCard, ExpenseForm } from "../../components/Expenses"
-import { LoadingPage, toCapitalize } from "../../utils"
+import { LoadingPage, toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
 
 const BudgetExpenses = () => {
 	const { id } = useParams();
@@ -81,20 +81,33 @@ const BudgetExpenses = () => {
 				}))
 			} else {
 				const budgets = JSON.parse(storageBudgets)
-				const budget = budgets.find(value => value.id === id)
-				if (budget) {
-					setBudget(budget)
+				if (id === UNCATEGORIZED_ID) {
+					setBudget({
+						id: UNCATEGORIZED_ID,
+						name: UNCATEGORIZED_NAME
+					})
 					let storageExpenses = localStorage.getItem("expenses")
 					if (storageExpenses !== null) {
 						storageExpenses = JSON.parse(storageExpenses)
 						dispatch(setExpenses(storageExpenses))
 					}
 				} else {
-					navigate(BUDGETS_PAGE_URL)
-					dispatch(open({
-						message: `Budget with ID \"${id}\" does not exist!`,
-						type: "danger",
-					}))
+
+					const budget = budgets.find(value => value.id === id)
+					if (budget) {
+						setBudget(budget)
+						let storageExpenses = localStorage.getItem("expenses")
+						if (storageExpenses !== null) {
+							storageExpenses = JSON.parse(storageExpenses)
+							dispatch(setExpenses(storageExpenses))
+						}
+					} else {
+						navigate(BUDGETS_PAGE_URL)
+						dispatch(open({
+							message: `Budget with ID \"${id}\" does not exist!`,
+							type: "danger",
+						}))
+					}
 				}
 			}
 			setLoading(false)
