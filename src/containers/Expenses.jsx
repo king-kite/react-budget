@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
 import { setBudgets } from "../store/features/budgets-slice";
-import { setExpenses, addExpense } from "../store/features/expenses-slice";
+import { setExpenses, addExpense, updateExpense } from "../store/features/expenses-slice";
 import { Button } from "../components/controls"
 import { Modal } from "../components/common";
 import { ExpenseCard, ExpenseForm } from "../components/Expenses"
@@ -14,6 +14,7 @@ const AllExpenses = () => {
 	const budgets = useSelector(state => state.budgets.data)
 	const expenses = useSelector(state => state.expenses.data)
 
+	const [editMode, setEditMode] = useState(false)
 	const [modalVisible, setModalVisible] = useState(false);
 	const [loading, setLoading] = useState(true)
 
@@ -45,6 +46,24 @@ const AllExpenses = () => {
 			dispatch(open({
 				type: "success",
 				message: "Expense was added successfully!"
+			}))
+			setFormLoading(false)
+		}, 2000)
+	}, [dispatch, budgets])
+
+	const handleUpdateExpense = useCallback((value) => {
+		setFormLoading(true)
+		setTimeout(() => {
+			const budget = budgets.find(b => b.id === parseInt(value.budgetId))
+			if (budget)
+				Object.assign(value, {budgetName: budget.name, budgetId: budget.id})
+			setModalVisible(false)
+			setEditMode(false)
+			setData({})
+			dispatch(updateExpense(value))
+			dispatch(open({
+				type: "success",
+				message: "Expense was updated successfully!"
 			}))
 			setFormLoading(false)
 		}, 2000)
@@ -98,6 +117,11 @@ const AllExpenses = () => {
 								<ExpenseCard 
 									{...expense} 
 									bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
+									updateExpense={(value) => {
+										setData(value)
+										setEditMode(true)
+										setModalVisible(true)
+									}}
 								/>
 							</div>
 						))}
@@ -125,12 +149,12 @@ const AllExpenses = () => {
 							errors={errors}
 							loading={formLoading}
 							onChange={handleChange}
-							onSubmit={(value) => handleAddExpense(value)}
+							onSubmit={editMode ? handleUpdateExpense : handleAddExpense}
 							onReset={() => setData({})}
 						/>
 					}
-					description={`Fill in the form below to add an expense for a budget...`}
-					title={`Add a Budget Expense`}
+					description={`Fill in the form below to ${editMode ? "update" : "add"} an expense for a budget...`}
+					title={`${editMode ? "Update" : "Add"} a Budget Expense`}
 					visible={modalVisible}
 				/>
 			{loading && <LoadingPage />}

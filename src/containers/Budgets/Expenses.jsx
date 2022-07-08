@@ -65,6 +65,7 @@ const BudgetExpenses = () => {
 				type: "success",
 				message: `${toCapitalize(budget.name)} Budget Expense was updated successfully!`
 			}))
+			setFormLoading(false)
 		}, 2000)
 	}, [dispatch, budget])
 
@@ -139,12 +140,7 @@ const BudgetExpenses = () => {
 										bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
 										updateExpense={(value) => {
 											setEditMode(true)
-											setData({
-												title: value.title,
-												description: value.description,
-												amount: value.amount,
-												date: value.date
-											})
+											setData(value)
 											setModalVisible(true)
 										}}
 									/>
