@@ -176,6 +176,7 @@ const Budgets = () => {
 							IconLeft={FaPlus}
 							onClick={() => {
 								setData({});
+								setEditMode(false)
 								dispatch(openModal());
 							}}
 							padding="px-6 py-3"
