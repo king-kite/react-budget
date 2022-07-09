@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setBudgets } from "../store/features/budgets-slice";
 import { setExpenses } from "../store/features/expenses-slice";
 import { setIncome } from "../store/features/income-slice";
-import { BUDGETS_PAGE_URL, EXPENSES_PAGE_URL } from "../config";
+import { BUDGETS_PAGE_URL, EXPENSES_PAGE_URL, INCOME_PAGE_URL } from "../config";
 import { Cards, Top } from "../components/Home";
 import { BudgetCard } from "../components/Budgets";
 import { ExpenseCard } from "../components/Expenses";
@@ -132,7 +132,7 @@ const Dashboard = () => {
 						<Button
 							bg="bg-primary-500 hover:bg-primary-300"
 							caps
-							link={EXPENSES_PAGE_URL}
+							link={INCOME_PAGE_URL}
 							title="View all"
 						/>
 					</div>
