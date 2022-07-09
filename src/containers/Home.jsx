@@ -84,8 +84,8 @@ const Dashboard = () => {
 							</p>
 						</div>
 					</div>
-					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
-						{budgets.slice(0, 3).map((budget, index) => {
+					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
+						{budgets.slice(0, 6).map((budget, index) => {
 							const currentAmount = expenses.reduce((totalAmount, expense) => {
 								if (expense.budgetId === budget.id)
 									return parseFloat(totalAmount) + parseFloat(expense.amount);
@@ -125,7 +125,7 @@ const Dashboard = () => {
 							</p>
 						</div>
 					</div>
-					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
+					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{income.slice(0, 6).map((data, index) => (
 							<div key={index}>
 								<IncomeCard {...data} showEditDeleteButton={false} />
@@ -153,7 +153,7 @@ const Dashboard = () => {
 							</p>
 						</div>
 					</div>
-					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-8">
+					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{expenses.slice(0, 6).map((expense, index) => (
 							<div key={index}>
 								<ExpenseCard {...expense} showEditDeleteButton={false} />
