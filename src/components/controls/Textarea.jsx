@@ -86,7 +86,7 @@ const Textarea = ({
         className={`${borderColor} ${bgColor} ${rounded} ${bdr} shadow-lg w-full`}
       >
         <textarea
-          className={`${bgColor} ${textColor} ${textSize} apperance-none leading-tight px-3 py-2 resize w-full focus:outline-none focus:shadow-outline`}
+          className={`${bgColor} ${textColor} ${textSize} ${rounded} apperance-none leading-tight px-3 py-2 resize w-full focus:outline-none focus:shadow-outline`}
           disabled={disabled}
           name={name}
           onChange={onChange}

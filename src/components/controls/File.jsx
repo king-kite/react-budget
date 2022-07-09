@@ -1,4 +1,6 @@
-const File = ({
+import { forwardRef } from "react"
+
+const File = forwardRef(({
 	accept,
 	bg,
 	bdr,
@@ -23,7 +25,7 @@ const File = ({
 	textSize,
 	value,
 	...props
-}) => {
+}, ref) => {
 
 	const bgColor = disabled ? "bg-gray-500" : bg;
 
@@ -77,6 +79,7 @@ const File = ({
 						accept={accept}
 						className="h-[1px] opacity-0 w-[1px]"
 						disabled={disabled}
+						ref={ref}
 						onChange={onChange}
 						name={name}
 						required={required}
@@ -97,7 +100,7 @@ const File = ({
 			)}
 		</div>
 	);
-};
+});
 
 File.defaultProps = {
 	accept: "*",

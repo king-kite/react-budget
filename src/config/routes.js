@@ -10,4 +10,6 @@ export const EXPENSES_PAGE_URL = "/expenses/";
 
 export const GOALS_PAGE_URL = "/goals/";
 
-export const INCOME_PAGE_URL = "/income/"
+export const INCOME_PAGE_URL = "/income/";
+
+export const RECEIPTS_PAGE_URL = "/receipts/";

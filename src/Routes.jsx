@@ -22,6 +22,8 @@ import GoalsPage from "./pages/goals";
 
 import IncomePage from "./pages/income";
 
+import ReceiptsPage from "./pages/receipts";
+
 const AppRoutes = () => (
 	<Routes>
 		<Route path="*" element={<NotFoundPage />} />
@@ -49,6 +51,8 @@ const AppRoutes = () => (
 					<Route path={routes.GOALS_PAGE_URL} element={<GoalsPage />} />
 
 					<Route path={routes.INCOME_PAGE_URL} element={<IncomePage />} />
+
+					<Route path={routes.RECEIPTS_PAGE_URL} element={<ReceiptsPage />} />
 				</Route>
 			</Route>
 		</Route>

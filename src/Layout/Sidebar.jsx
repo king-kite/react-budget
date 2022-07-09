@@ -46,7 +46,7 @@ const links = [
 	},
 	{
 		Icon: FaReceipt,
-		href: "#",
+		href: routes.RECEIPTS_PAGE_URL,
 		title: "receipts",
 	},
 	{
