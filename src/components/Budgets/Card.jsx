@@ -94,7 +94,7 @@ const Card = ({
 						? "bg-yellow-200"
 						: "bg-red-200"
 					: bg
-			} border-2 border-gray-300 p-4 relative rounded-lg shadow-lg`}
+			} border-2 border-gray-300 h-full p-4 relative rounded-lg shadow-lg w-full`}
 		>
 			<div className="flex items-baseline justify-between px-1">
 				<h4 className="capitalize font-medium text-base text-gray-500 md:text-lg">
@@ -150,7 +150,7 @@ const Card = ({
 				<div
 					className={`gap-4 grid grid-cols-2 ${
 						amount ? "px-2" : "px-1 mt-3"
-					} md:gap-5 w-full`}
+					} md:gap-5 lg:gap-3 w-full`}
 				>
 					{showEditButton && (
 						<div>

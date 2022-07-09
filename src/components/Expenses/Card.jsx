@@ -43,26 +43,28 @@ const ExpenseCard = ({
 
 	return (
 		<div
-			className={`${bg} border border-gray-400 p-4 relative rounded-lg shadow-lg`}
+			className={`${bg} border border-gray-400 flex flex-col justify-between h-full p-4 relative rounded-lg shadow-lg w-full`}
 		>
-			<div className="flex items-baseline justify-between">
-				<h4 className="capitalize font-medium text-base text-gray-500 md:text-lg">
-					{title}
-				</h4>
-				<div className="font-medium flex items-baseline text-base text-gray-500 tracking-wider md:text-lg lg:text-xl">
-					{currencyFormatter.format(amount)}
+			<div>
+				<div className="flex items-baseline justify-between">
+					<h4 className="capitalize font-medium text-base text-gray-500 md:text-lg">
+						{title}
+					</h4>
+					<div className="font-medium flex items-baseline text-base text-gray-500 tracking-wider md:text-lg lg:text-xl">
+						{currencyFormatter.format(amount)}
+					</div>
 				</div>
+				<p className="capitalize font-semibold my-1 text-gray-500 text-sm md:text-base">
+					{budgetName}
+				</p>
+				<p className="capitalize font-semibold my-1 text-gray-500 text-sm md:text-base">
+					{new Date(date).toDateString()}
+				</p>
+				<span className="capitalize text-gray-400 underline text-sm">
+					description
+				</span>
+				<p className="my-1 text-gray-500 text-sm md:text-base">{description}</p>
 			</div>
-			<p className="capitalize font-semibold my-1 text-gray-500 text-sm md:text-base">
-				{budgetName}
-			</p>
-			<p className="capitalize font-semibold my-1 text-gray-500 text-sm md:text-base">
-				{new Date(date).toDateString()}
-			</p>
-			<span className="capitalize text-gray-400 underline text-sm">
-				description
-			</span>
-			<p className="my-1 text-gray-500 text-sm md:text-base">{description}</p>
 
 			{showEditDeleteButton && (
 				<div className="gap-4 grid grid-cols-2 pt-3 md:gap-5 w-full">
