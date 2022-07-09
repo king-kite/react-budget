@@ -13,7 +13,7 @@ import {
 	FaTable,
 	FaThLarge,
 } from "react-icons/fa";
-import { APP_NAME, LOGO_IMAGE, LOGIN_PAGE_URL } from "../config";
+import { APP_NAME, LOGO_IMAGE } from "../config";
 import * as routes from "../config/routes";
 import { logout } from "../store/features/auth-slice";
 import AppLink from "./Link";
@@ -41,7 +41,7 @@ const links = [
 	},
 	{
 		Icon: FaSmileBeam,
-		href: "#",
+		href: routes.GOALS_PAGE_URL,
 		title: "goals",
 	},
 	{
@@ -63,7 +63,7 @@ const Header = forwardRef(
 
 		const handleLogout = useCallback(() => {
 			dispatch(logout())
-			navigate(LOGIN_PAGE_URL, { replace: true })
+			navigate(routes.LOGIN_PAGE_URL, { replace: true })
 		}, [dispatch, navigate])
 
 		return (

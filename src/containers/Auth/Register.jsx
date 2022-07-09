@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { FaLock } from "react-icons/fa"
-import { APP_NAME, BG_IMAGE, LOGO_IMAGE, LOGIN_PAGE_URL } from "../../config"
+import { APP_NAME, LOGO_IMAGE, LOGIN_PAGE_URL } from "../../config"
 import { close, open } from "../../store/features/alert-slice";
 import { Alert, Button, Input } from "../../components/controls";
 

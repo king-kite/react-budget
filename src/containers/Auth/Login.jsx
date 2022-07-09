@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
 import {
   APP_NAME,
-  BG_IMAGE,
   LOGO_IMAGE,
   REGISTER_PAGE_URL,
 } from "../../config";

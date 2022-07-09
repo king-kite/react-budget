@@ -8,7 +8,7 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset }) => (
 			e.preventDefault()
 			onSubmit({
 				...data,
-				title: data.title.toLowerCase(),
+				name: data.name.toLowerCase(),
 			})
 		}} 
 		className="p-4 lg:px-2"
@@ -18,17 +18,17 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset }) => (
 				<Input
 					bdrColor="border-gray-300"
 					disabled={loading}
-					error={errors?.title}
-					label="Title Of Income"
+					error={errors?.name}
+					label="Name Of Goal"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
-					name="title"
+					name="name"
 					padding="px-4 py-3"
-					placeholder="Enter Title Of Income"
+					placeholder="Enter Name Of Goal"
 					rounded="rounded-xl"
 					textSize="text-sm md:text-base"
-					value={data.title || ""}
+					value={data.name || ""}
 				/>
 			</div>
 			<div className="mb-4 md:px-2 md:w-1/2 lg:mb-5 lg:px-4">
@@ -36,13 +36,13 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset }) => (
 					bdrColor="border-gray-300"
 					disabled={loading}
 					error={errors?.amount}
-					label="Income Amount"
+					label="Goal Amount"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
 					name="amount"
 					padding="px-4 py-3"
-					placeholder="Enter Income Amount"
+					placeholder="Enter Goal Amount"
 					rounded="rounded-xl"
 					textSize="text-sm md:text-base"
 					type="number"
@@ -55,31 +55,49 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset }) => (
 				<Input
 					bdrColor="border-gray-300"
 					disabled={loading}
-					error={errors?.date}
-					label="Date"
+					error={errors?.start_date}
+					label="Start Date"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
-					name="date"
+					name="start_date"
 					padding="px-4 py-3"
-					placeholder="Enter Income Date"
+					placeholder="Enter Goal Start Date"
 					rounded="rounded-xl"
 					textSize="text-sm md:text-base"
 					type="date"
-					value={data.date || ""}
+					value={data.start_date || ""}
+				/>
+			</div>
+			<div className="mb-4 md:px-2 md:w-1/2 lg:mb-5 lg:px-4">
+				<Input
+					bdrColor="border-gray-300"
+					disabled={loading}
+					error={errors?.end_date}
+					label="End Date"
+					labelColor="text-gray-500"
+					labelSize="text-sm tracking-wider md:text-base"
+					onChange={onChange}
+					name="end_date"
+					padding="px-4 py-3"
+					placeholder="Enter Goal End Date"
+					rounded="rounded-xl"
+					textSize="text-sm md:text-base"
+					type="date"
+					value={data.end_date || ""}
 				/>
 			</div>
 			<div className="mb-4 w-full md:px-2 lg:mb-5 lg:px-4">
 				<Textarea
 					bdrColor="border-gray-300"
 					disabled={loading}
-					error={errors?.date}
+					error={errors?.description}
 					label="Description"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
 					name="description"
-					placeholder="Enter Income Description"
+					placeholder="Enter Goal Description"
 					rounded="rounded-xl"
 					style={{ height: "60px" }}
 					textSize="text-sm md:text-base"

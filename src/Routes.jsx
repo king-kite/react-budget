@@ -11,11 +11,15 @@ import NotFoundPage from "./pages/404";
 import LoginPage from "./pages/auth/login";
 import RegisterPage from "./pages/auth/register";
 import HomePage from "./pages"
+
 import BudgetsPage from "./pages/budgets"
 import BudgetDetailPage from "./pages/budgets/detail"
 import BudgetExpensesPage from "./pages/budgets/expenses"
 
 import ExpensesPage from "./pages/expenses";
+
+import GoalsPage from "./pages/goals";
+
 import IncomePage from "./pages/income";
 
 const AppRoutes = () => (
@@ -41,6 +45,9 @@ const AppRoutes = () => (
 						</Route>
 					</Route>
 					<Route path={routes.EXPENSES_PAGE_URL} element={<ExpensesPage />} />
+
+					<Route path={routes.GOALS_PAGE_URL} element={<GoalsPage />} />
+
 					<Route path={routes.INCOME_PAGE_URL} element={<IncomePage />} />
 				</Route>
 			</Route>
