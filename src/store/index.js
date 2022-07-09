@@ -4,7 +4,7 @@ import alertReducer from "./features/alert-slice";
 import authReducer from "./features/auth-slice";
 import budgetsReducer from "./features/budgets-slice";
 import expensesReducer from "./features/expenses-slice";
-import modalReducer from "./features/modal-slice"
+import incomeReducer from "./features/income-slice";
 
 const store = configureStore({
   devTools: NODE_ENV === "development",
@@ -13,7 +13,7 @@ const store = configureStore({
     auth: authReducer,
     budgets: budgetsReducer,
     expenses: expensesReducer,
-    modal: modalReducer
+    income: incomeReducer,
   },
 });
 

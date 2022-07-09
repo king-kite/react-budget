@@ -1,5 +1,5 @@
-import Dashboard from "../containers/Home";
+import Income from "../containers/Income";
 
-const Page = () => <Dashboard />
+const Page = () => <Income />
 
 export default Page

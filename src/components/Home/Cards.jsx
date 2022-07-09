@@ -1,38 +1,38 @@
 import {
-	FaCreditCard,
-	FaUsers,
+	FaMoneyBillWave,
+	FaMoneyCheck,
+	FaTable,
 	FaDollarSign,
-	FaChartBar,
 } from "react-icons/fa";
 import { Card } from "../common"
 import { currencyFormatter } from "../../utils"
 
-const Cards = ({ budgets, budgetCount, expenses }) => {
+const Cards = ({ budgets, budgetCount, expenses, income }) => {
 
 	const cards = [
 	{
-		Icon: FaDollarSign,
+		Icon: FaMoneyBillWave,
 		iconBg: "bg-red-100",
 		iconColor: "text-red-500",
 		title: "total expenses",
 		value: expenses > 0 ? currencyFormatter.format(expenses) : 0,
 	},
 	{
-		Icon: FaUsers,
+		Icon: FaMoneyCheck,
 		iconBg: "bg-green-100",
 		iconColor: "text-green-500",
 		title: "total income",
-		value: "0",
+		value: income > 0 ? currencyFormatter.format(income) : 0,
 	},
 	{
-		Icon: FaCreditCard,
+		Icon: FaTable,
 		iconBg: "bg-blue-100",
 		iconColor: "text-blue-500",
 		title: "No. of budgets",
 		value: budgetCount,
 	},
 	{
-		Icon: FaChartBar,
+		Icon: FaDollarSign,
 		iconBg: "bg-purple-100",
 		iconColor: "text-purple-500",
 		title: "total budget",

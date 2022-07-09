@@ -1,8 +1,8 @@
 import { FaCheckCircle, FaEraser } from "react-icons/fa"
 import { Button, Input, Select, Textarea } from "../controls"
-import { toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
+import { toCapitalize } from "../../utils"
 
-const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }) => (
+const Form = ({ data, errors, loading, onChange, onSubmit, onReset }) => (
 	<form 
 		onSubmit={(e) => {
 			e.preventDefault()
@@ -14,41 +14,18 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }
 		className="p-4 lg:px-2"
 	>
 		<div className="w-full md:flex md:flex-wrap">
-			{budgets && budgets.length > 0 && (
-				<div className="mb-4 md:px-2 md:w-1/2 lg:mb-5 lg:px-4">
-					<Select
-						bdrColor="border-gray-300"
-						disabled={loading}
-						error={errors?.budgetId}
-						label="Budget"
-						labelColor="text-gray-500"
-						labelSize="text-sm tracking-wider md:text-base"
-						onChange={onChange}
-						options={[
-							{ title: UNCATEGORIZED_NAME, value: UNCATEGORIZED_ID },
-							...budgets.map(budget => ({ title: toCapitalize(budget.name), value: budget.id }))
-						]}
-						name="budgetId"
-						padding="px-4 py-3"
-						placeholder="Select Budget"
-						rounded="rounded-xl"
-						textSize="text-sm md:text-base"
-						value={data.budgetId || ""}
-					/>
-				</div>
-			)}
 			<div className="mb-4 md:px-2 md:w-1/2 lg:mb-5 lg:px-4">
 				<Input
 					bdrColor="border-gray-300"
 					disabled={loading}
 					error={errors?.title}
-					label="Title Of Expense"
+					label="Title Of Income"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
 					name="title"
 					padding="px-4 py-3"
-					placeholder="Enter Title Of Expense"
+					placeholder="Enter Title Of Income"
 					rounded="rounded-xl"
 					textSize="text-sm md:text-base"
 					value={data.title || ""}
@@ -59,13 +36,13 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }
 					bdrColor="border-gray-300"
 					disabled={loading}
 					error={errors?.amount}
-					label="Expense Amount"
+					label="Income Amount"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
 					name="amount"
 					padding="px-4 py-3"
-					placeholder="Enter Expense Amount"
+					placeholder="Enter Income Amount"
 					rounded="rounded-xl"
 					textSize="text-sm md:text-base"
 					type="number"
@@ -85,7 +62,7 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }
 					onChange={onChange}
 					name="date"
 					padding="px-4 py-3"
-					placeholder="Enter Expense Date"
+					placeholder="Enter Income Date"
 					rounded="rounded-xl"
 					textSize="text-sm md:text-base"
 					type="date"
@@ -96,13 +73,13 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset, budgets=[] }
 				<Textarea
 					bdrColor="border-gray-300"
 					disabled={loading}
-					error={errors?.description}
+					error={errors?.date}
 					label="Description"
 					labelColor="text-gray-500"
 					labelSize="text-sm tracking-wider md:text-base"
 					onChange={onChange}
 					name="description"
-					placeholder="Enter Expense Description"
+					placeholder="Enter Income Description"
 					rounded="rounded-xl"
 					style={{ height: "60px" }}
 					textSize="text-sm md:text-base"

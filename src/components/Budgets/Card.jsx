@@ -25,6 +25,7 @@ const Card = ({
 	updateBudget,
 	showButtons = true,
 	showEditButton = true,
+	showDeleteButton = true,
 	showDetailButton = true
 }) => {
 	const ratio = currentAmount / amount;
@@ -39,7 +40,6 @@ const Card = ({
 		const newExpenses = expenses.filter(
 			(expense) => expense.budgetId !== UNCATEGORIZED_ID
 		);
-		console.log("NEW EXPENSES :>> ", newExpenses)
 		dispatch(moveExpenses(newExpenses));
 	}, [dispatch, expenses]);
 
@@ -175,6 +175,7 @@ const Card = ({
 							/>
 						</div>
 					)}
+					{showDeleteButton && (
 						<div>
 							<Button
 								bg="bg-red-100 hover:bg-red-200"
@@ -188,6 +189,7 @@ const Card = ({
 								title="delete"
 							/>
 						</div>
+					)}
 					{showDetailButton && (
 
 						<div>
