@@ -4,6 +4,7 @@ import { Link, useLocation, useMatch } from "react-router-dom";
 const AppLink = ({
 	Icon,
 	href,
+	onClick,
 	closeSidebar,
 	title,
 	visible,
@@ -23,9 +24,12 @@ const AppLink = ({
 	return (
 		<li>
 			<Link
-				to={href}
+				to={href || "#"}
 				className="cursor-pointer flex justify-center px-6 w-full sm:px-2 md:px-8 lg:px-2 xl:px-0"
-				onClick={closeSidebar}
+				onClick={() => {
+					if (onClick) onClick()
+					closeSidebar()
+				}}
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
 			>

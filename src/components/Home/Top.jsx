@@ -1,7 +1,7 @@
 import { BiRefresh } from "react-icons/bi"
 import { Button } from "../controls";
 
-const Top = () => (
+const Top = ({ onRefresh }) => (
 	<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 		<div className="my-2">
 			<h3 className="top-heading">
@@ -18,6 +18,7 @@ const Top = () => (
 					caps
 					iconSize="text-sm sm:text-base md:text-lg"
 					IconLeft={BiRefresh}
+					onClick={onRefresh}
 					padding="px-4 py-3"
 					rounded="rounded-full"
 					title="refresh dashboard"

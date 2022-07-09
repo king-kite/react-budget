@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setBudgets } from "../store/features/budgets-slice";
 import { setExpenses } from "../store/features/expenses-slice";
@@ -19,7 +19,7 @@ const Dashboard = () => {
 	const expenses = useSelector((state) => state.expenses.data);
 	const income = useSelector((state) => state.income.data);
 
-	useEffect(() => {
+	const getData = useCallback(() => {
 		setLoading(true);
 		setTimeout(() => {
 			const budgets = localStorage.getItem("budgets");
@@ -36,11 +36,15 @@ const Dashboard = () => {
 			}
 			setLoading(false);
 		}, 2000);
-	}, [dispatch]);
+	}, [dispatch])
+
+	useEffect(() => {
+		getData()
+	}, [getData]);
 
 	return (
 		<div>
-			<Top />
+			<Top onRefresh={getData} />
 			<Cards
 				budgetCount={budgets ? budgets.length : 0}
 				budgets={

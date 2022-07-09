@@ -51,26 +51,7 @@ const Login = () => {
 
   return (
     <div className="bg-gray-200 flex flex-row-reverse min-h-screen items-center justify-between w-full">
-      <div
-        className="hidden md:absolute md:block md:h-full md:right-0 md:top-0 md:w-1/2"
-        style={{
-          background: `url(${BG_IMAGE})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-        }}
-      >
-        <div
-          className="md:flex md:items-end md:justify-center md:h-full md:px-3 md:pb-9 lg:px-8 lg:pb-12"
-          style={{
-            background: "rgba(0, 0, 0, 0.8)",
-          }}
-        >
-          <h1 className="md:font-semibold md:m-3 md:text-4xl md:text-gray-200 md:tracking-wider md:uppercase lg:text-5xl">
-            &ldquo;a building with four walls and tomorrow inside&rdquo;
-          </h1>
-        </div>
-      </div>
-      <div className="w-full md:flex md:flex-col md:items-center md:mr-auto md:px-6 md:w-1/2">
+      <div className="w-full md:flex md:flex-col md:items-center md:px-6">
         <div className="bg-gray-50 flex flex-col justify-center max-h-[600px] max-w-xs mx-auto py-6 rounded-md shadow-lg w-full">
           <div>
             <img
