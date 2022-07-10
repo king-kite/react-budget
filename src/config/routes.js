@@ -12,4 +12,6 @@ export const GOALS_PAGE_URL = "/goals/";
 
 export const INCOME_PAGE_URL = "/income/";
 
+export const LITERACY_PAGE_URL = "/literacy/"
+
 export const RECEIPTS_PAGE_URL = "/receipts/";

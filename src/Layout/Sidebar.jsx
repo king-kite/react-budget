@@ -51,7 +51,7 @@ const links = [
 	},
 	{
 		Icon: FaChartLine,
-		href: "#",
+		href: routes.LITERACY_PAGE_URL,
 		title: "literacy",
 	},
 ];
