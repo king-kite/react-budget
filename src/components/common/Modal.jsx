@@ -31,7 +31,10 @@ const Modal = ({
 	);
 
 	useEffect(() => {
-		if (visible) setReset(false);
+		if (visible) {
+			setReset(false);
+			window.scrollTo(0,0)
+		}
 	}, [visible]);
 
 	useEffect(() => {
