@@ -3,18 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
 import { setGoals, addGoal, updateGoal } from "../store/features/goals-slice";
+import { useLoadingContext } from "../contexts";
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";
 import { GoalCard, GoalForm } from "../components/Goals";
-import { LoadingPage, toCapitalize } from "../utils";
+import { toCapitalize } from "../utils";
 
 const Goals = () => {
 	const dispatch = useDispatch();
 	const goals = useSelector((state) => state.goals.data);
 
+	const { openLoader, closeLoader } = useLoadingContext();
+
 	const [editMode, setEditMode] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
-	const [loading, setLoading] = useState(true);
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
@@ -71,13 +73,14 @@ const Goals = () => {
 	}, [dispatch, goals])
 
 	useEffect(() => {
+		openLoader()
 		setTimeout(() => {
 			let storageGoals = localStorage.getItem("goals");
 			if (storageGoals !== null) {
 				storageGoals = JSON.parse(storageGoals);
 				dispatch(setGoals(storageGoals));
 			}
-			setLoading(false);
+			closeLoader()
 		}, 2000);
 	}, [dispatch]);
 
@@ -158,7 +161,6 @@ const Goals = () => {
 				title={`${editMode ? "Update" : "Add"} Financial Goal`}
 				visible={modalVisible}
 			/>
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

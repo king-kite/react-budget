@@ -2,19 +2,21 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
+import { useLoadingContext } from "../contexts"
 import { setIncome, addIncome, updateIncome } from "../store/features/income-slice";
 import { Button } from "../components/controls"
 import { Modal } from "../components/common";
 import { IncomeCard, IncomeForm } from "../components/Income"
-import { LoadingPage, toCapitalize } from "../utils"
+import { toCapitalize } from "../utils"
 
 const Income = () => {
 	const dispatch = useDispatch();
 	const income = useSelector(state => state.income.data)
 
+	const { openLoader, closeLoader } = useLoadingContext();
+
 	const [editMode, setEditMode] = useState(false)
 	const [modalVisible, setModalVisible] = useState(false);
-	const [loading, setLoading] = useState(true)
 
 	const [data, setData] = useState({})
 	const [errors, setErrors] = useState({})
@@ -71,13 +73,14 @@ const Income = () => {
 	}, [dispatch, income])
 
 	useEffect(() => {
+		openLoader()
 		setTimeout(() => {
 			let storageIncome = localStorage.getItem("income")
 			if (storageIncome !== null) {
 				storageIncome = JSON.parse(storageIncome)
 				dispatch(setIncome(storageIncome))
 			}
-			setLoading(false)
+			closeLoader()
 		}, 2000)
 	}, [dispatch])
 
@@ -158,7 +161,6 @@ const Income = () => {
 					title={`${editMode ? "Update" : "Add"} an Income Trasaction`}
 					visible={modalVisible}
 				/>
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

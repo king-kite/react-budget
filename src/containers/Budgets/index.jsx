@@ -8,6 +8,7 @@ import {
 } from "../../store/features/budgets-slice";
 import { setExpenses } from "../../store/features/expenses-slice";
 import { open } from "../../store/features/alert-slice";
+import { useLoadingContext } from "../../contexts"
 import { Button } from "../../components/controls";
 import {
 	BudgetCard,
@@ -16,12 +17,10 @@ import {
 	UncategorizedBudgetCard,
 } from "../../components/Budgets";
 import { Modal } from "../../components/common";
-import { LoadingPage } from "../../utils";
 
 const Budgets = () => {
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
-	const [loading, setLoading] = useState(true);
 	const [formLoading, setFormLoading] = useState(false);
 	const [editMode, setEditMode] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false)
@@ -30,8 +29,10 @@ const Budgets = () => {
 	const budgets = useSelector((state) => state.budgets.data);
 	const expenses = useSelector((state) => state.expenses.data);
 
+	const { openLoader, closeLoader }  = useLoadingContext()
+
 	useEffect(() => {
-		setLoading(true);
+		openLoader()
 		setTimeout(() => {
 			const budgets = localStorage.getItem("budgets");
 			const expenses = localStorage.getItem("expenses");
@@ -41,7 +42,7 @@ const Budgets = () => {
 			if (expenses !== null) {
 				dispatch(setExpenses(JSON.parse(expenses)));
 			}
-			setLoading(false);
+			closeLoader()
 		}, 2000);
 	}, [dispatch]);
 
@@ -270,7 +271,6 @@ const Budgets = () => {
 				title={editMode ? "Edit Budget" : "Add a New Budget"}
 				visible={modalVisible}
 			/>
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

@@ -3,18 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
 import { setReceipts, addReceipt, updateReceipt } from "../store/features/receipts-slice";
+import { useLoadingContext } from "../contexts"
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";
 import { ReceiptCard, ReceiptForm } from "../components/Receipts";
-import { LoadingPage, toCapitalize } from "../utils";
+import { toCapitalize } from "../utils";
 
 const Receipts = () => {
 	const dispatch = useDispatch();
 	const receipts = useSelector((state) => state.receipts.data);
+	const { openLoader, closeLoader }  = useLoadingContext()
 
 	const [editMode, setEditMode] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
-	const [loading, setLoading] = useState(true);
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
@@ -79,13 +80,14 @@ const Receipts = () => {
 	}, [dispatch, receipts])
 
 	useEffect(() => {
+		openLoader()
 		setTimeout(() => {
 			let storageReceipts = localStorage.getItem("receipts");
 			if (storageReceipts !== null) {
 				storageReceipts = JSON.parse(storageReceipts);
 				dispatch(setReceipts(storageReceipts));
 			}
-			setLoading(false);
+			closeLoader()
 		}, 2000);
 	}, [dispatch]);
 
@@ -167,7 +169,6 @@ const Receipts = () => {
 				title={`${editMode ? "Update" : "Add"} Receipt`}
 				visible={modalVisible}
 			/>
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

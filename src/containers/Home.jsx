@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setBudgets } from "../store/features/budgets-slice";
 import { setExpenses } from "../store/features/expenses-slice";
 import { setIncome } from "../store/features/income-slice";
+import { useLoadingContext } from "../contexts"
 import { BUDGETS_PAGE_URL, EXPENSES_PAGE_URL, INCOME_PAGE_URL } from "../config";
 import { Cards, Top } from "../components/Home";
 import { BudgetCard } from "../components/Budgets";
 import { ExpenseCard } from "../components/Expenses";
 import { IncomeCard } from "../components/Income";
 import { Button } from "../components/controls";
-import { LoadingPage } from "../utils";
 
 const Dashboard = () => {
-	const [loading, setLoading] = useState(false);
+	const { openLoader, closeLoader } = useLoadingContext()
 
 	const dispatch = useDispatch();
 	const budgets = useSelector((state) => state.budgets.data);
@@ -20,7 +20,7 @@ const Dashboard = () => {
 	const income = useSelector((state) => state.income.data);
 
 	const getData = useCallback(() => {
-		setLoading(true);
+		openLoader();
 		setTimeout(() => {
 			const budgets = localStorage.getItem("budgets");
 			if (budgets !== null) {
@@ -34,7 +34,7 @@ const Dashboard = () => {
 			if (income !== null) {
 				dispatch(setIncome(JSON.parse(income)));
 			}
-			setLoading(false);
+			closeLoader()
 		}, 2000);
 	}, [dispatch])
 
@@ -170,7 +170,6 @@ const Dashboard = () => {
 					</div>
 				</div>
 			)}
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

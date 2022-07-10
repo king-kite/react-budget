@@ -5,24 +5,25 @@ import { FaPlus } from "react-icons/fa";
 import { BUDGETS_PAGE_URL } from "../../config"
 import { open } from "../../store/features/alert-slice";
 import { setExpenses, addExpense, updateExpense } from "../../store/features/expenses-slice";
+import { useLoadingContext } from "../../contexts"
 import { Button } from "../../components/controls"
 import { Modal } from "../../components/common";
 import { ExpenseCard, ExpenseForm } from "../../components/Expenses"
-import { LoadingPage, toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
+import { toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
 
 const BudgetExpenses = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 
-
 	const dispatch = useDispatch();
 	const expenses = useSelector(state => state.expenses.data)
+
+	const { isLoading, openLoader, closeLoader } = useLoadingContext()
 
 	const [budgetExpenses, setBudgetExpenses] = useState([])
 	const [budget, setBudget] = useState(null)
 	const [modalVisible, setModalVisible] = useState(false);
 	const [editMode, setEditMode] = useState(false)
-	const [loading, setLoading] = useState(true)
 
 	const [data, setData] = useState({})
 	const [errors, setErrors] = useState({})
@@ -70,6 +71,7 @@ const BudgetExpenses = () => {
 	}, [dispatch, budget])
 
 	useEffect(() => {
+		openLoader()
 		setTimeout(() => {
 
 			const storageBudgets = localStorage.getItem("budgets")
@@ -110,7 +112,7 @@ const BudgetExpenses = () => {
 					}
 				}
 			}
-			setLoading(false)
+			closeLoader()
 		}, 2000)
 	}, [dispatch, navigate, id])
 
@@ -120,7 +122,7 @@ const BudgetExpenses = () => {
 
 	return (
 		<div>
-			{(loading === false && budget !== null &&
+			{(isLoading === false && budget !== null &&
 				<>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">
@@ -202,7 +204,6 @@ const BudgetExpenses = () => {
 					/>
 				</>
 			)}
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

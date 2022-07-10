@@ -4,10 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import { BUDGETS_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
+import { useLoadingContext } from "../../contexts";
 import { InfoComp } from "../../components/common";
 import { Button } from "../../components/controls";
 import {
-	LoadingPage,
 	toCapitalize,
 	UNCATEGORIZED_ID,
 	UNCATEGORIZED_NAME,
@@ -16,7 +16,8 @@ import {
 const BudgetDetail = () => {
 	const [budget, setBudget] = useState(null);
 	const [expenses, setExpenses] = useState([]);
-	const [loading, setLoading] = useState(true);
+	
+	const { isLoading, closeLoader, openLoader } = useLoadingContext()
 
 	const { id } = useParams();
 	const navigate = useNavigate();
@@ -24,6 +25,7 @@ const BudgetDetail = () => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		openLoader()
 		setTimeout(() => {
 			const storageBudgets = localStorage.getItem("budgets");
 			if (storageBudgets === null) {
@@ -58,7 +60,7 @@ const BudgetDetail = () => {
 					);
 				}
 			}
-			setLoading(false);
+			closeLoader()
 		}, 2000);
 	}, [dispatch, navigate, id]);
 
@@ -92,7 +94,7 @@ const BudgetDetail = () => {
 
 	return (
 		<div>
-			{loading === false && budget !== null && (
+			{isLoading === false && budget !== null && (
 				<>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">
@@ -127,7 +129,6 @@ const BudgetDetail = () => {
 					)}
 				</>
 			)}
-			{loading && <LoadingPage />}
 		</div>
 	);
 };

@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { APP_NAME, LOGO_IMAGE } from "../config";
+import { useLoadingContext } from "../contexts"
 import { close } from "../store/features/alert-slice";
 import { useOutClick } from "../hooks";
 import { MenuIcon } from "../components/common";
 import { Alert } from "../components/controls";
+import { LoadingPage } from "../utils"
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
 
 const Container = ({ children }) => {
 	const { buttonRef, ref, setVisible, visible } = useOutClick();
 	const [nVisible, setNVisible] = useState(false);
+
+	const { isLoading } = useLoadingContext()
 
 	const dispatch = useDispatch();
 	const message = useSelector((state) => state.alert.message);
@@ -69,6 +73,7 @@ const Container = ({ children }) => {
 					</div>
 				</div>
 			</main>
+			{isLoading && <LoadingPage />}
 		</>
 	);
 };

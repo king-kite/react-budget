@@ -8,11 +8,11 @@ import {
 	addExpense,
 	updateExpense,
 } from "../store/features/expenses-slice";
+import { useLoadingContext } from "../contexts"
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";
 import { ExpenseCard, ExpenseForm } from "../components/Expenses";
 import {
-	LoadingPage,
 	toCapitalize,
 	UNCATEGORIZED_ID,
 	UNCATEGORIZED_NAME,
@@ -23,9 +23,10 @@ const AllExpenses = () => {
 	const budgets = useSelector((state) => state.budgets.data);
 	const expenses = useSelector((state) => state.expenses.data);
 
+	const { closeLoader, openLoader } = useLoadingContext()
+
 	const [editMode, setEditMode] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
-	const [loading, setLoading] = useState(true);
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
@@ -121,6 +122,7 @@ const AllExpenses = () => {
 	);
 
 	useEffect(() => {
+		openLoader()
 		setTimeout(() => {
 			let storageBudgets = localStorage.getItem("budgets");
 			let storageExpenses = localStorage.getItem("expenses");
@@ -132,7 +134,7 @@ const AllExpenses = () => {
 				storageBudgets = JSON.parse(storageBudgets);
 				dispatch(setBudgets(storageBudgets));
 			}
-			setLoading(false);
+			closeLoader()
 		}, 2000);
 	}, [dispatch]);
 
@@ -214,7 +216,6 @@ const AllExpenses = () => {
 				title={`${editMode ? "Update" : "Add"} a Budget Expense`}
 				visible={modalVisible}
 			/>
-			{loading && <LoadingPage />}
 		</div>
 	);
 };
