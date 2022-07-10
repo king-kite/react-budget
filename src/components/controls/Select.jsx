@@ -1,13 +1,9 @@
 import { FaChevronDown } from "react-icons/fa";
-import Badge from "../common/Badge";
-import Button from "./Button";
 
 const Select = ({
-  badge,
   bg,
   bdr,
   bdrColor,
-  btn,
   color,
   disabled,
   error,
@@ -73,23 +69,6 @@ const Select = ({
                 </span>
               )}
             </label>
-          )}
-          {btn && (
-            <div>
-              <Button 
-                bold="normal"
-                caps
-                padding="p-2" 
-                titleSize="text-xs" 
-                type="button"
-                {...btn} 
-              />
-            </div>
-          )}
-          {badge && (
-            <div>
-              <Badge {...badge} />
-            </div>
           )}
         </div>
       )}

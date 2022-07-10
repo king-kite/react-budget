@@ -1,16 +1,11 @@
 import { useCallback, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Badge from "../common/Badge";
-import Button from "./Button";
 
 const Input = ({
-	badge,
 	bg,
 	bdr,
 	bdrColor,
-	btn,
 	color,
-	datalist,
 	disabled,
 	error,
 	errorSize,
@@ -90,23 +85,6 @@ const Input = ({
 							)}
 						</label>
 					)}
-					{btn && (
-						<div>
-							<Button
-								bold="normal"
-								caps
-								padding="p-2"
-								titleSize="text-xs"
-								type="button"
-								{...btn}
-							/>
-						</div>
-					)}
-					{badge && (
-						<div>
-							<Badge {...badge} />
-						</div>
-					)}
 				</div>
 			)}
 			<div
@@ -130,7 +108,6 @@ const Input = ({
 					required={required}
 					multiple={multiple}
 					type={_type}
-					list={datalist?.id}
 					value={value}
 					{...props}
 				/>
@@ -147,13 +124,6 @@ const Input = ({
 					</span>
 				)}
 			</div>
-			{datalist && (
-				<datalist id={datalist?.id}>
-					{datalist?.list.map(({ id, value }) => (
-						<option key={id || value} value={value} />
-					))}
-				</datalist>
-			)}
 			{error && (
 				<p
 					className={`capitalize font-secondary font-semibold italic mt-1 text-red-500 ${errorSize}`}
