@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { open } from "../../store/features/alert-slice"
-import { deleteGoal } from "../../store/features/goals-slice";
+import { useDeleteGoalMutation } from "../../store/features/goals-api-slice"
 import { Button } from "../controls"
 import { currencyFormatter, LoadingPage, toCapitalize } from "../../utils";
 
@@ -17,7 +17,8 @@ const Card = ({
 	updateGoal,
 	showEditDeleteButton=true
 }) => {
-	const [loading, setLoading] = useState(false);
+	
+	const [deleteGoal,{isLoading, error, status}] = useDeleteGoalMutation()
 
 	const dispatch = useDispatch();
 
@@ -25,20 +26,21 @@ const Card = ({
 		const _delete = window.confirm(
 			`Are you sure you want to delete the ${toCapitalize(
 				name
-			)} Goal?`
+			)} Financial Goal?`
 		);
-		if (_delete === true) {
-			setLoading(true);
-			setTimeout(() => {
-				dispatch(deleteGoal(id));
-				dispatch(open({
-					type: 'success',
-					message: `${toCapitalize(name)} Goal was deleted successfully`
-				}))
-				setLoading(false);
-			}, 2000);
-		}
+		if (_delete === true) deleteGoal(id)
 	}, [dispatch, id, name]);
+
+	useEffect(() => {
+		if (status === "fulfilled") {
+			dispatch(open({
+				type: 'success',
+				message: `\"${toCapitalize(name)}\" Financial Goal was deleted successfully`
+			}))
+		} else if (status === "rejected" && error) {
+			console.log("DELETE GOALS ERROR :>> ", error)
+		}
+	}, [dispatch, status, error, name])
 
 	return (
 		<div
@@ -104,7 +106,7 @@ const Card = ({
 					</div>
 				</div>
 			)}
-			{loading && <LoadingPage className="absolute rounded-lg" />}
+			{isLoading && <LoadingPage className="absolute rounded-lg" />}
 		</div>
 	);
 };

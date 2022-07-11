@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
-import { setGoals, addGoal, updateGoal } from "../store/features/goals-slice";
+import {
+	useGetGoalsQuery,
+	useAddGoalMutation,
+	useEditGoalMutation,
+} from "../store/features/goals-api-slice";
 import { useLoadingContext } from "../contexts";
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";
@@ -11,7 +15,17 @@ import { toCapitalize } from "../utils";
 
 const Goals = () => {
 	const dispatch = useDispatch();
-	const goals = useSelector((state) => state.goals.data);
+
+	const { data: goals, isLoading } = useGetGoalsQuery();
+
+	const [
+		addGoal,
+		{ status: addStatus, isLoading: addLoading, error: addError },
+	] = useAddGoalMutation();
+	const [
+		editGoal,
+		{ status: editStatus, isLoading: editLoading, error: editError },
+	] = useEditGoalMutation();
 
 	const { openLoader, closeLoader } = useLoadingContext();
 
@@ -20,7 +34,6 @@ const Goals = () => {
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
-	const [formLoading, setFormLoading] = useState(false);
 
 	const handleChange = useCallback(({ target: { name, value } }) => {
 		setData((prevState) => ({
@@ -34,55 +47,66 @@ const Goals = () => {
 		}));
 	}, []);
 
-	const handleAddGoal = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			dispatch(addGoal(value))
-			setModalVisible(false)
-			dispatch(open({
-				type: "success",
-				message: "Financial Goal was added successfully!"
-			}))
-			setData({})
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch])
+	const handleAddGoal = useCallback(
+		(value) => {
+			addGoal(value);
+		},
+		[addGoal]
+	);
 
-	const handleUpdateGoal = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			const goal = goals.find(data => data.id === value.id)
+	const handleUpdateGoal = useCallback(
+		(value) => {
+			const goal = goals ? goals.find((data) => data.id === value.id) : null;
 			if (goal) {
-				dispatch(updateGoal(value))
-				dispatch(open({
-					type: "success",
-					message: "Financial Goal was updated successfully!"
-				}))
-				setModalVisible(false)
-				setEditMode(false)
-				setData({})
+				editGoal(value);
 			} else {
-				setModalVisible(false)
-				dispatch(open({
-					type: "danger", 
-					message: `Financial Goal with ID ${value.id} was not found`
-				}))
-			} 
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch, goals])
+				setModalVisible(false);
+				dispatch(
+					open({
+						type: "danger",
+						message: `Financial Goal with ID ${value.id} was not found`,
+					})
+				);
+			}
+		},
+		[dispatch, editGoal, goals]
+	);
 
 	useEffect(() => {
-		openLoader()
-		setTimeout(() => {
-			let storageGoals = localStorage.getItem("goals");
-			if (storageGoals !== null) {
-				storageGoals = JSON.parse(storageGoals);
-				dispatch(setGoals(storageGoals));
-			}
-			closeLoader()
-		}, 2000);
-	}, [dispatch]);
+		if (isLoading) openLoader();
+		else closeLoader();
+	}, [isLoading]);
+
+	useEffect(() => {
+		if (addStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Financial Goal was added successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+		} else if (addStatus === "rejected" && addError) {
+			console.log("ADD GOAL ERROR :>> ", addError);
+		}
+	}, [addStatus, addError]);
+
+	useEffect(() => {
+		if (editStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Financial Goal was updated successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+			setEditMode(false);
+		} else if (editStatus === "rejected" && editError) {
+			console.log("EDIT GOAL ERROR :>> ", editError);
+		}
+	}, [editStatus, editError]);
 
 	return (
 		<div>
@@ -108,7 +132,7 @@ const Goals = () => {
 					</div>
 				</div>
 			</div>
-			{goals.length > 0 ? (
+			{goals && goals.length > 0 ? (
 				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
 					{goals.map((goal, index) => (
 						<div key={index}>
@@ -129,7 +153,9 @@ const Goals = () => {
 					<div className="my-4">
 						<FaPlus className="text-primary-600 text-6xl" />
 					</div>
-					<p className="top-description">There are currently no financial goals.</p>
+					<p className="top-description">
+						There are currently no financial goals.
+					</p>
 					<p className="top-description">Add one now</p>
 				</div>
 			)}
@@ -140,7 +166,7 @@ const Goals = () => {
 					<GoalForm
 						data={data}
 						errors={errors}
-						loading={formLoading}
+						loading={editMode ? editLoading : addLoading}
 						onChange={handleChange}
 						onSubmit={editMode ? handleUpdateGoal : handleAddGoal}
 						onReset={() =>
@@ -150,7 +176,7 @@ const Goals = () => {
 								description: "",
 								amount: "",
 								start_date: "",
-								end_date: ""
+								end_date: "",
 							}))
 						}
 					/>

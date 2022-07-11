@@ -103,7 +103,7 @@ const BudgetExpenses = () => {
 			setData({});
 			setEditMode(false);
 		} else if (editStatus === "rejected" && editError) {
-			console.log("ADD EXPENSE ERROR :>> ", editError);
+			console.log("EDIT EXPENSE ERROR :>> ", editError);
 		}
 	}, [editStatus, editError]);
 

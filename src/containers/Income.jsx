@@ -85,7 +85,7 @@ const Income = () => {
 			setData({});
 			setEditMode(false);
 		} else if (editStatus === "rejected" && editError) {
-			console.log("ADD INCOME ERROR :>> ", editError);
+			console.log("EDIT INCOME ERROR :>> ", editError);
 		}
 	}, [editStatus, editError]);
 
