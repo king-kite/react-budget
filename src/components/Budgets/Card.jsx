@@ -1,10 +1,13 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaEye, FaPen, FaTrash } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { BUDGET_DETAIL_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
-import { deleteBudget } from "../../store/features/budgets-slice";
-import { moveExpenses } from "../../store/features/expenses-slice";
+import { useDeleteBudgetMutation } from "../../store/features/budgets-api-slice";
+import {
+	useGetExpensesQuery,
+	useMoveExpensesMutation,
+} from "../../store/features/expenses-api-slice";
 import { Button } from "../controls";
 import {
 	currencyFormatter,
@@ -26,37 +29,45 @@ const Card = ({
 	showButtons = true,
 	showEditButton = true,
 	showDeleteButton = true,
-	showDetailButton = true
+	showDetailButton = true,
 }) => {
 	const ratio = currentAmount / amount;
 
 	const [loading, setLoading] = useState(false);
 
-	const expenses = useSelector((state) => state.expenses.data);
+	const { data: expenses, isLoading: expensesLoading } = useGetExpensesQuery();
 
 	const dispatch = useDispatch();
 
+	const [
+		deleteBudget,
+		{ isLoading: deleteLoading, error: deleteError, status: deleteStatus },
+	] = useDeleteBudgetMutation();
+	const [moveExpenses, { isLoading: moveLoading }] = useMoveExpensesMutation();
+
 	const deleteUncategorizedExpenses = useCallback(() => {
-		const newExpenses = expenses.filter(
-			(expense) => expense.budgetId !== UNCATEGORIZED_ID
-		);
-		dispatch(moveExpenses(newExpenses));
-	}, [dispatch, expenses]);
+		const newExpenses = expenses
+			? expenses.filter((expense) => expense.budgetId !== UNCATEGORIZED_ID)
+			: [];
+		moveExpenses(newExpenses);
+	}, [moveExpenses, expenses]);
 
 	const moveExpensesToUncategorized = useCallback(
 		(budgetId) => {
-			const newExpenses = expenses.map((expense) => {
-				if (expense.budgetId === budgetId)
-					return {
-						...expense,
-						budgetName: UNCATEGORIZED_NAME,
-						budgetId: UNCATEGORIZED_ID,
-					};
-				return expense;
-			});
-			dispatch(moveExpenses(newExpenses));
+			const newExpenses = expenses
+				? expenses.map((expense) => {
+						if (expense.budgetId === budgetId)
+							return {
+								...expense,
+								budgetName: UNCATEGORIZED_NAME,
+								budgetId: UNCATEGORIZED_ID,
+							};
+						return expense;
+				  })
+				: [];
+			moveExpenses(newExpenses);
 		},
-		[dispatch, expenses]
+		[moveExpenses, expenses]
 	);
 
 	const handleDelete = useCallback(() => {
@@ -66,23 +77,29 @@ const Card = ({
 				: `Are you sure you want to delete the ${toCapitalize(name)} Budget?`
 		);
 		if (_delete === true) {
-			setLoading(true);
-			setTimeout(() => {
-				if (id === UNCATEGORIZED_ID) deleteUncategorizedExpenses();
-				else {
-					moveExpensesToUncategorized(id);
-					dispatch(deleteBudget(id));
-				}
-				dispatch(
-					open({
-						type: "success",
-						message: `${toCapitalize(name)} ${id === UNCATEGORIZED_ID ? "expenses were" : "budget was"} deleted successfully`,
-					})
-				);
-				setLoading(false);
-			}, 2000);
+			if (id === UNCATEGORIZED_ID) deleteUncategorizedExpenses();
+			else {
+				moveExpensesToUncategorized(id);
+				deleteBudget(id);
+			}
+			setLoading(false);
 		}
-	}, [dispatch, id, name, moveExpensesToUncategorized]);
+	}, [deleteBudget, id, name, moveExpensesToUncategorized]);
+
+	useEffect(() => {
+		if (deleteStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: `${toCapitalize(name)} ${
+						id === UNCATEGORIZED_ID ? "expenses were" : "budget was"
+					} deleted successfully`,
+				})
+			);
+		} else if (deleteStatus === "rejected" && deleteError) {
+			console.log("DELETE BUDGET ERROR :>> ", deleteError);
+		}
+	}, [deleteStatus, deleteError]);
 
 	return (
 		<div
@@ -191,7 +208,6 @@ const Card = ({
 						</div>
 					)}
 					{showDetailButton && (
-
 						<div>
 							<Button
 								bg="bg-gray-100 hover:bg-gray-200"
@@ -221,7 +237,9 @@ const Card = ({
 					</div>
 				</div>
 			)}
-			{loading && <LoadingPage className="absolute rounded-lg" />}
+			{(deleteLoading || expensesLoading || moveLoading) && (
+				<LoadingPage className="absolute rounded-lg" />
+			)}
 		</div>
 	);
 };

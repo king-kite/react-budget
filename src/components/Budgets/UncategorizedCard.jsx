@@ -1,9 +1,7 @@
-import { useSelector } from "react-redux"
 import BudgetCard from "./Card"
 import {UNCATEGORIZED_ID, UNCATEGORIZED_NAME} from "../../utils"
 
-const UncategorizedBudget = () => {
-	const expenses = useSelector(state => state.expenses.data.filter(expense => expense.budgetId === UNCATEGORIZED_ID))
+const UncategorizedBudget = ({ expenses=[] }) => {
 	if (expenses.length <= 0) return null
 
 	const currentAmount = expenses.reduce((totalAmount, expense) => {

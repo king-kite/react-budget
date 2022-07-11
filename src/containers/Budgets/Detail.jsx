@@ -2,69 +2,49 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
+import { skipToken } from "@reduxjs/toolkit/query/react"
 import { BUDGETS_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
+import { useGetBudgetQuery } from "../../store/features/budgets-api-slice";
+import { useGetExpensesQuery } from "../../store/features/expenses-api-slice"
 import { useLoadingContext } from "../../contexts";
 import { InfoComp } from "../../components/common";
 import { Button } from "../../components/controls";
-import {
-	toCapitalize,
-	UNCATEGORIZED_ID,
-	UNCATEGORIZED_NAME,
-} from "../../utils";
+import { toCapitalize } from "../../utils";
 
 const BudgetDetail = () => {
-	const [budget, setBudget] = useState(null);
-	const [expenses, setExpenses] = useState([]);
-	
-	const { isLoading, closeLoader, openLoader } = useLoadingContext()
-
 	const { id } = useParams();
 	const navigate = useNavigate();
 
 	const dispatch = useDispatch();
 
-	useEffect(() => {
-		openLoader()
-		setTimeout(() => {
-			const storageBudgets = localStorage.getItem("budgets");
-			if (storageBudgets === null) {
-				navigate(BUDGETS_PAGE_URL, { replace: true });
-				dispatch(
-					open({
-						message: `Budget with ID \"${id}\" does not exist!`,
-						type: "danger",
-					})
-				);
-			} else {
-				const budgets = JSON.parse(storageBudgets);
-				const _budget = budgets.find((value) => value.id === id);
-				if (_budget) {
-					setBudget(_budget);
-					let storageExpenses = localStorage.getItem("expenses");
-					if (storageExpenses !== null) {
-						storageExpenses = JSON.parse(storageExpenses);
-						setExpenses(
-							storageExpenses.filter(
-								(expense) => expense.budgetId === _budget.id
-							)
-						);
-					}
-				} else {
-					navigate(BUDGETS_PAGE_URL, { replace: true });
-					dispatch(
-						open({
-							message: `Budget with ID \"${id}\" does not exist!`,
-							type: "danger",
-						})
-					);
-				}
-			}
-			closeLoader()
-		}, 2000);
-	}, [dispatch, navigate, id]);
+	const { data:budget, isLoading:budgetLoading, error } = useGetBudgetQuery(id || skipToken, {
+		skip: id === undefined
+	})
 
-	const details = [
+	const { data:expenses, isLoading:expensesLoading } = useGetExpensesQuery()
+	
+	const { isLoading, closeLoader, openLoader } = useLoadingContext()
+
+	useEffect(() => {
+		if (budgetLoading || expensesLoading) openLoader()
+		else closeLoader()
+	}, [budgetLoading, expensesLoading])
+
+	useEffect(() => {
+		if (error) {
+			console.log("BUDGET NOT FOUND ERROR :>> ", error)
+			navigate(BUDGETS_PAGE_URL, { replace: true });
+			dispatch(
+				open({
+					message: `Budget with ID \"${id}\" does not exist!`,
+					type: "danger",
+				})
+			);	
+		}
+	}, [navigate, dispatch, error])
+
+	const details = budget && expenses ? [
 		{ title: "Name", value: budget?.name ? toCapitalize(budget.name) : "" },
 		{ title: "Amount", value: budget?.amount || 2 },
 		{
@@ -85,16 +65,16 @@ const BudgetDetail = () => {
 			title: "End Date",
 			value: budget?.end_date ? new Date(budget.end_date).toDateString() : "",
 		},
-	];
+	] : [];
 
-	const expensesInfo = expenses.map((expense) => ({
+	const expensesInfo = budget && expenses ? expenses.map((expense) => expense.budgetId === budget.id && ({
 		title: toCapitalize(expense.title),
 		value: `Amount: ${expense.amount}, Date: ${expense.date}`,
-	}));
+	})) : [];
 
 	return (
 		<div>
-			{isLoading === false && budget !== null && (
+			{budget && (
 				<>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">
@@ -122,7 +102,7 @@ const BudgetDetail = () => {
 						<InfoComp title="Details" infos={details} />
 					</div>
 
-					{expenses.length > 0 && (
+					{expensesInfo.length > 0 && (
 						<div>
 							<InfoComp title="Expenses" infos={expensesInfo} />
 						</div>
