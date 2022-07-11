@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
 import { useGetBudgetsQuery } from "../store/features/budgets-api-slice";
@@ -8,12 +8,6 @@ import {
 	useAddExpenseMutation,
 	useEditExpenseMutation,
 } from "../store/features/expenses-api-slice";
-import { setBudgets } from "../store/features/budgets-slice";
-import {
-	setExpenses,
-	addExpense,
-	updateExpense,
-} from "../store/features/expenses-slice";
 import { useLoadingContext } from "../contexts";
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";

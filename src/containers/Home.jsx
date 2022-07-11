@@ -1,10 +1,13 @@
 import { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setBudgets } from "../store/features/budgets-slice";
-import { setExpenses } from "../store/features/expenses-slice";
-import { setIncome } from "../store/features/income-slice";
-import { useLoadingContext } from "../contexts"
-import { BUDGETS_PAGE_URL, EXPENSES_PAGE_URL, INCOME_PAGE_URL } from "../config";
+import { useGetBudgetsQuery } from "../store/features/budgets-api-slice";
+import { useGetExpensesQuery } from "../store/features/expenses-api-slice";
+import { useGetIncomeQuery } from "../store/features/income-api-slice";
+import { useLoadingContext } from "../contexts";
+import {
+	BUDGETS_PAGE_URL,
+	EXPENSES_PAGE_URL,
+	INCOME_PAGE_URL,
+} from "../config";
 import { Cards, Top } from "../components/Home";
 import { BudgetCard } from "../components/Budgets";
 import { ExpenseCard } from "../components/Expenses";
@@ -12,39 +15,38 @@ import { IncomeCard } from "../components/Income";
 import { Button } from "../components/controls";
 
 const Dashboard = () => {
-	const { openLoader, closeLoader } = useLoadingContext()
+	const { openLoader, closeLoader } = useLoadingContext();
 
-	const dispatch = useDispatch();
-	const budgets = useSelector((state) => state.budgets.data);
-	const expenses = useSelector((state) => state.expenses.data);
-	const income = useSelector((state) => state.income.data);
+	const {
+		data: budgets,
+		isLoading: budgetsLoading,
+		refetch: budgetsRefresh,
+	} = useGetBudgetsQuery();
+	const {
+		data: expenses,
+		isLoading: expensesLoading,
+		refetch: expensesRefresh,
+	} = useGetExpensesQuery();
+	const {
+		data: income,
+		isLoading: incomeLoading,
+		refetch: incomeRefresh,
+	} = useGetIncomeQuery();
 
-	const getData = useCallback(() => {
-		openLoader();
-		setTimeout(() => {
-			const budgets = localStorage.getItem("budgets");
-			if (budgets !== null) {
-				dispatch(setBudgets(JSON.parse(budgets)));
-			}
-			const expenses = localStorage.getItem("expenses");
-			if (expenses !== null) {
-				dispatch(setExpenses(JSON.parse(expenses)));
-			}
-			const income = localStorage.getItem("income");
-			if (income !== null) {
-				dispatch(setIncome(JSON.parse(income)));
-			}
-			closeLoader()
-		}, 2000);
-	}, [dispatch])
+	const onRefresh = useCallback(() => {
+		budgetsRefresh();
+		expensesRefresh();
+		incomeRefresh();
+	}, [budgetsRefresh, expensesRefresh, incomeRefresh]);
 
 	useEffect(() => {
-		getData()
-	}, [getData]);
+		if (budgetsLoading || expensesLoading || incomeLoading) openLoader();
+		else closeLoader();
+	}, [budgetsLoading, expensesLoading, incomeLoading]);
 
 	return (
 		<div>
-			<Top onRefresh={getData} />
+			<Top onRefresh={onRefresh} />
 			<Cards
 				budgetCount={budgets ? budgets.length : 0}
 				budgets={
@@ -74,7 +76,7 @@ const Dashboard = () => {
 						: 0
 				}
 			/>
-			{budgets.length > 0 && (
+			{budgets && budgets.length > 0 && (
 				<div>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">
@@ -114,7 +116,7 @@ const Dashboard = () => {
 					</div>
 				</div>
 			)}
-			{income.length > 0 && (
+			{income && income.length > 0 && (
 				<div>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">
@@ -142,7 +144,7 @@ const Dashboard = () => {
 					</div>
 				</div>
 			)}
-			{expenses.length > 0 && (
+			{expenses && expenses.length > 0 && (
 				<div>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
 import { useLoadingContext } from "../contexts"
-import { setIncome, addIncome, updateIncome } from "../store/features/income-slice";
+import { useAddIncomeMutation, useEditIncomeMutation, useGetIncomeQuery } from "../store/features/income-api-slice"
 import { Button } from "../components/controls"
 import { Modal } from "../components/common";
 import { IncomeCard, IncomeForm } from "../components/Income"
@@ -11,7 +11,10 @@ import { toCapitalize } from "../utils"
 
 const Income = () => {
 	const dispatch = useDispatch();
-	const income = useSelector(state => state.income.data)
+	const { data:income, isLoading } = useGetIncomeQuery();
+
+	const [addIncome, { status:addStatus, isLoading:addLoading, error:addError}] = useAddIncomeMutation()
+	const [editIncome, { status:editStatus, isLoading:editLoading, error:editError}] = useEditIncomeMutation()
 
 	const { openLoader, closeLoader } = useLoadingContext();
 
@@ -20,7 +23,6 @@ const Income = () => {
 
 	const [data, setData] = useState({})
 	const [errors, setErrors] = useState({})
-	const [formLoading, setFormLoading] = useState(false)
 
 	const handleChange = useCallback(({ target: { name, value }}) => {
 		setData(prevState => ({
@@ -35,32 +37,13 @@ const Income = () => {
 	}, [])
 
 	const handleAddIncome = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			dispatch(addIncome(value))
-			setModalVisible(false)
-			dispatch(open({
-				type: "success",
-				message: "Income Transaction was added successfully!"
-			}))
-			setData({})
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch])
+		addIncome(value)
+	}, [addIncome])
 
 	const handleUpdateIncome = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			const singleIncome = income.find(data => data.id === value.id)
+			const singleIncome = income ? income.find(data => data.id === value.id) : null
 			if (singleIncome) {
-				dispatch(updateIncome(value))
-				dispatch(open({
-					type: "success",
-					message: "Expense was updated successfully!"
-				}))
-				setModalVisible(false)
-				setEditMode(false)
-				setData({})
+				editIncome(value)
 			} else {
 				setModalVisible(false)
 				dispatch(open({
@@ -68,21 +51,43 @@ const Income = () => {
 					message: `Income Transaction with ID ${value.id} was not found`
 				}))
 			} 
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch, income])
+	}, [dispatch, editIncome, income])
 
 	useEffect(() => {
-		openLoader()
-		setTimeout(() => {
-			let storageIncome = localStorage.getItem("income")
-			if (storageIncome !== null) {
-				storageIncome = JSON.parse(storageIncome)
-				dispatch(setIncome(storageIncome))
-			}
-			closeLoader()
-		}, 2000)
-	}, [dispatch])
+		if (isLoading) openLoader()
+		else closeLoader()
+	}, [isLoading])
+
+	useEffect(() => {
+		if (addStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Income Transaction was added successfully!"
+				})
+			);
+			setModalVisible(false);
+			setData({});
+		} else if (addStatus === "rejected" && addError) {
+			console.log("ADD INCOME ERROR :>> ", addError);
+		}
+	}, [addStatus, addError]);
+
+	useEffect(() => {
+		if (editStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Income Transaction was updated successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+			setEditMode(false);
+		} else if (editStatus === "rejected" && editError) {
+			console.log("ADD INCOME ERROR :>> ", editError);
+		}
+	}, [editStatus, editError]);
 
 	return (
 		<div>
@@ -101,7 +106,11 @@ const Income = () => {
 								caps
 								iconSize="text-sm sm:text-base md:text-lg"
 								IconLeft={FaPlus}
-								onClick={() => setModalVisible(true)}
+								onClick={() => {
+									setEditMode(false)
+									setData({})
+									setModalVisible(true)
+								}}
 								padding="px-4 py-3"
 								rounded="rounded-lg"
 								title="add income"
@@ -109,7 +118,7 @@ const Income = () => {
 						</div>
 					</div>
 				</div>
-				{income.length > 0 ? (
+				{income && income.length > 0 ? (
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
 						{income.map((data, index) => (
 							<div key={index}>
@@ -145,7 +154,7 @@ const Income = () => {
 						<IncomeForm 
 							data={data}
 							errors={errors}
-							loading={formLoading}
+							loading={editMode ? editLoading : addLoading}
 							onChange={handleChange}
 							onSubmit={editMode ? handleUpdateIncome : handleAddIncome}
 							onReset={() => setData(prevState => ({

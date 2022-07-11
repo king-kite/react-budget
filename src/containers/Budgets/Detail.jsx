@@ -6,7 +6,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react"
 import { BUDGETS_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
 import { useGetBudgetQuery } from "../../store/features/budgets-api-slice";
-import { useGetExpensesQuery } from "../../store/features/expenses-api-slice"
+import { useGetBudgetExpensesQuery } from "../../store/features/expenses-api-slice"
 import { useLoadingContext } from "../../contexts";
 import { InfoComp } from "../../components/common";
 import { Button } from "../../components/controls";
@@ -22,7 +22,9 @@ const BudgetDetail = () => {
 		skip: id === undefined
 	})
 
-	const { data:expenses, isLoading:expensesLoading } = useGetExpensesQuery()
+	const { data:expenses, isLoading:expensesLoading } = useGetBudgetExpensesQuery(id || skipToken, {
+		skip: id === undefined
+	})
 	
 	const { isLoading, closeLoader, openLoader } = useLoadingContext()
 
@@ -34,7 +36,7 @@ const BudgetDetail = () => {
 	useEffect(() => {
 		if (error) {
 			console.log("BUDGET NOT FOUND ERROR :>> ", error)
-			navigate(BUDGETS_PAGE_URL, { replace: true });
+			navigate(BUDGETS_PAGE_URL);
 			dispatch(
 				open({
 					message: `Budget with ID \"${id}\" does not exist!`,
@@ -67,7 +69,7 @@ const BudgetDetail = () => {
 		},
 	] : [];
 
-	const expensesInfo = budget && expenses ? expenses.map((expense) => expense.budgetId === budget.id && ({
+	const expensesInfo = budget && expenses ? expenses.map((expense) => ({
 		title: toCapitalize(expense.title),
 		value: `Amount: ${expense.amount}, Date: ${expense.date}`,
 	})) : [];

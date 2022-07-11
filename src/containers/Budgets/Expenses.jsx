@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import { skipToken } from "@reduxjs/toolkit/query/react";
@@ -11,11 +11,6 @@ import {
 	useAddExpenseMutation,
 	useEditExpenseMutation,
 } from "../../store/features/expenses-api-slice";
-import {
-	setExpenses,
-	addExpense,
-	updateExpense,
-} from "../../store/features/expenses-slice";
 import { useLoadingContext } from "../../contexts";
 import { Button } from "../../components/controls";
 import { Modal } from "../../components/common";
@@ -146,7 +141,7 @@ const BudgetExpenses = () => {
 
 	useEffect(() => {
 		if (error) {
-			navigate(BUDGETS_PAGE_URL, { replace: true });
+			navigate(BUDGETS_PAGE_URL);
 			dispatch(
 				open({
 					message: `Budget with ID \"${id}\" does not exist!`,

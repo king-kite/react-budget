@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { open } from "../../store/features/alert-slice"
-import { deleteIncome } from "../../store/features/income-slice";
+import { useDeleteIncomeMutation } from "../../store/features/income-api-slice"
 import { Button } from "../controls"
 import { currencyFormatter, LoadingPage, toCapitalize } from "../../utils";
 
@@ -16,9 +16,9 @@ const IncomeCard = ({
 	updateIncome,
 	showEditDeleteButton=true
 }) => {
-	const [loading, setLoading] = useState(false);
-
 	const dispatch = useDispatch();
+
+	const [deleteIncome, { isLoading, error, status }] = useDeleteIncomeMutation()
 
 	const handleDelete = useCallback(() => {
 		const _delete = window.confirm(
@@ -27,17 +27,20 @@ const IncomeCard = ({
 			)}\" Transaction?`
 		);
 		if (_delete === true) {
-			setLoading(true);
-			setTimeout(() => {
-				dispatch(deleteIncome(id));
-				dispatch(open({
-					type: 'success',
-					message: `\"${toCapitalize(title)}\" Transaction was deleted successfully`
-				}))
-				setLoading(false);
-			}, 2000);
+			deleteIncome(id);
 		}
 	}, [dispatch, id, title]);
+
+	useEffect(() => {
+		if (status === "fulfilled") {
+			dispatch(open({
+				type: 'success',
+				message: `\"${toCapitalize(title)}\" Transaction was deleted successfully`
+			}))
+		} else if (status === "rejected" && error) {
+			console.log("DELETE INCOME ERROR :>> ", error)
+		}
+	}, [dispatch, status, error, title])
 
 	return (
 		<div
@@ -99,7 +102,7 @@ const IncomeCard = ({
 					</div>
 				</div>
 			)}
-			{loading && <LoadingPage className="absolute rounded-lg" />}
+			{isLoading && <LoadingPage className="absolute rounded-lg" />}
 		</div>
 	);
 };
