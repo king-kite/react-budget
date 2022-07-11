@@ -183,11 +183,11 @@ const Budgets = () => {
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.map((budget, index) => {
-							const currentAmount = expenses.reduce((totalAmount, expense) => {
+							const currentAmount = expenses ? expenses.reduce((totalAmount, expense) => {
 								if (expense.budgetId === budget.id)
 									return parseFloat(totalAmount) + parseFloat(expense.amount);
 								else return totalAmount;
-							}, 0);
+							}, 0) : 0;
 
 							return (
 								<div key={index}>
@@ -208,11 +208,11 @@ const Budgets = () => {
 					</div>
 					<div className="gap-4 grid grid-cols-1 my-4 sm:gap-5 sm:my-5 md:gap-6 md:my-6 md:grid-cols-2 lg:gap-3 lg:my-3 lg:grid-cols-3">
 						<UncategorizedBudgetCard
-							expenses={expenses.filter(
+							expenses={expenses ? expenses.filter(
 								(expense) => expense.budgetId === UNCATEGORIZED_ID
-							)}
+							) : []}
 						/>
-						<TotalCard expenses={expenses} budgets={budgets} />
+						<TotalCard expenses={expenses || []} budgets={budgets} />
 					</div>
 				</>
 			) : (

@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { open } from "../../store/features/alert-slice"
-import { deleteExpense } from "../../store/features/expenses-slice";
+import { useDeleteExpenseMutation } from "../../store/features/expenses-api-slice"
 import { Button } from "../controls"
 import { currencyFormatter, LoadingPage, toCapitalize } from "../../utils";
 
@@ -18,9 +18,10 @@ const ExpenseCard = ({
 	updateExpense,
 	showEditDeleteButton=true
 }) => {
-	const [loading, setLoading] = useState(false);
 
 	const dispatch = useDispatch();
+
+	const [deleteExpense, { error, isLoading, status }] = useDeleteExpenseMutation()
 
 	const handleDelete = useCallback(() => {
 		const _delete = window.confirm(
@@ -29,17 +30,21 @@ const ExpenseCard = ({
 			)} Expense?`
 		);
 		if (_delete === true) {
-			setLoading(true);
-			setTimeout(() => {
-				dispatch(deleteExpense(id));
-				dispatch(open({
-					type: 'success',
-					message: `${toCapitalize(title)} Expense was deleted successfully`
-				}))
-				setLoading(false);
-			}, 2000);
+			deleteExpense(id);
 		}
-	}, [dispatch, id, title]);
+	}, [deleteExpense, id, title]);
+
+	useEffect(() => {
+		if (status === "fulfilled") {
+
+			dispatch(open({
+				type: 'success',
+				message: `${toCapitalize(title)} Expense was deleted successfully`
+			}))
+		} else if (status === "rejected" && error) {
+			console.log("DELETE EXPENSE ERROR :>> ", error)
+		}
+	}, [dispatch, status, error, title])
 
 	return (
 		<div
@@ -105,7 +110,7 @@ const ExpenseCard = ({
 					</div>
 				</div>
 			)}
-			{loading && <LoadingPage className="absolute rounded-lg" />}
+			{isLoading && <LoadingPage className="absolute rounded-lg" />}
 		</div>
 	);
 };

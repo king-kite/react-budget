@@ -1,128 +1,170 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import { BUDGETS_PAGE_URL } from "../../config"
+import { skipToken } from "@reduxjs/toolkit/query/react";
+import { BUDGETS_PAGE_URL } from "../../config";
 import { open } from "../../store/features/alert-slice";
-import { setExpenses, addExpense, updateExpense } from "../../store/features/expenses-slice";
-import { useLoadingContext } from "../../contexts"
-import { Button } from "../../components/controls"
+import { useGetBudgetQuery } from "../../store/features/budgets-api-slice";
+import {
+	useGetBudgetExpensesQuery,
+	useAddExpenseMutation,
+	useEditExpenseMutation,
+} from "../../store/features/expenses-api-slice";
+import {
+	setExpenses,
+	addExpense,
+	updateExpense,
+} from "../../store/features/expenses-slice";
+import { useLoadingContext } from "../../contexts";
+import { Button } from "../../components/controls";
 import { Modal } from "../../components/common";
-import { ExpenseCard, ExpenseForm } from "../../components/Expenses"
-import { toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils"
+import { ExpenseCard, ExpenseForm } from "../../components/Expenses";
+import {
+	toCapitalize,
+	UNCATEGORIZED_ID,
+	UNCATEGORIZED_NAME,
+} from "../../utils";
 
 const BudgetExpenses = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 
 	const dispatch = useDispatch();
-	const expenses = useSelector(state => state.expenses.data)
 
-	const { isLoading, openLoader, closeLoader } = useLoadingContext()
+	const { isLoading, openLoader, closeLoader } = useLoadingContext();
 
-	const [budgetExpenses, setBudgetExpenses] = useState([])
-	const [budget, setBudget] = useState(null)
+	const { data: budgetData, isLoading: budgetLoading } = useGetBudgetQuery(
+		id || skipToken,
+		{
+			skip: id === undefined || id === UNCATEGORIZED_ID,
+		}
+	);
+	const {
+		data: expenses,
+		isLoading: expensesLoading,
+		error,
+	} = useGetBudgetExpensesQuery(id || skipToken, {
+		skip: id === undefined,
+	});
+
+	const [
+		addExpense,
+		{ error: addError, isLoading: addLoading, status: addStatus },
+	] = useAddExpenseMutation();
+	const [
+		editExpense,
+		{ error: editError, isLoading: editLoading, status: editStatus },
+	] = useEditExpenseMutation();
+
+	const [budget, setBudget] = useState(null);
+
 	const [modalVisible, setModalVisible] = useState(false);
-	const [editMode, setEditMode] = useState(false)
+	const [editMode, setEditMode] = useState(false);
 
-	const [data, setData] = useState({})
-	const [errors, setErrors] = useState({})
-	const [formLoading, setFormLoading] = useState(false)
+	const [data, setData] = useState({});
+	const [errors, setErrors] = useState({});
+	const [formLoading, setFormLoading] = useState(false);
 
-	const handleChange = useCallback(({ target: { name, value }}) => {
-		setData(prevState => ({
+	const handleChange = useCallback(({ target: { name, value } }) => {
+		setData((prevState) => ({
 			...prevState,
-			[name]: value
-		}))
+			[name]: value,
+		}));
 
-		setErrors(prevState => ({
+		setErrors((prevState) => ({
 			...prevState,
-			[name]: ""
-		}))
-	}, [])
-
-	const handleAddExpense = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			setModalVisible(false)
-			setData({})
-			dispatch(addExpense({ ...value, budgetId: budget.id, budgetName: budget.name }))
-			dispatch(open({
-				type: "success",
-				message: `${toCapitalize(budget.name)} Budget Expense was added successfully!`
-			}))
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch, budget])
-
-	const handleUpdateExpense = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			setModalVisible(false)
-			setData({})
-			setEditMode(false)
-			dispatch(updateExpense({ ...value, budgetId: budget.id, budgetName: budget.name }))
-			dispatch(open({
-				type: "success",
-				message: `${toCapitalize(budget.name)} Budget Expense was updated successfully!`
-			}))
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch, budget])
+			[name]: "",
+		}));
+	}, []);
 
 	useEffect(() => {
-		openLoader()
-		setTimeout(() => {
+		if (addStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: `${toCapitalize(
+						budget.name
+					)} Budget Expense was added successfully!`,
+				})
+			);
+			setModalVisible(false);
+			setData({});
+		} else if (addStatus === "rejected" && addError) {
+			console.log("ADD EXPENSE ERROR :>> ", addError);
+		}
+	}, [addStatus, addError]);
 
-			const storageBudgets = localStorage.getItem("budgets")
-			if (storageBudgets === null) {
-				navigate(BUDGETS_PAGE_URL, { replace: true })
-				dispatch(open({
+	useEffect(() => {
+		if (editStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: `${toCapitalize(
+						budget.name
+					)} Budget Expense was updated successfully!`,
+				})
+			);
+			setModalVisible(false);
+			setData({});
+			setEditMode(false);
+		} else if (editStatus === "rejected" && editError) {
+			console.log("ADD EXPENSE ERROR :>> ", editError);
+		}
+	}, [editStatus, editError]);
+
+	const handleAddExpense = useCallback(
+		(value) => {
+			addExpense({ ...value, budgetId: budget.id, budgetName: budget.name });
+		},
+		[addExpense, budget]
+	);
+
+	const handleUpdateExpense = useCallback(
+		(value) => {
+			editExpense({
+				...value,
+				budgetId: budget.id,
+				budgetName: budget.name,
+			});
+		},
+		[editExpense, budget]
+	);
+
+	useEffect(() => {
+		if (id === UNCATEGORIZED_ID) {
+			setBudget({
+				id: UNCATEGORIZED_ID,
+				name: UNCATEGORIZED_NAME,
+			});
+		} else if (budgetData) {
+			setBudget({
+				id: budgetData.id,
+				name: budgetData.name,
+			});
+		}
+	}, [id, budgetData]);
+
+	useEffect(() => {
+		if (error) {
+			navigate(BUDGETS_PAGE_URL, { replace: true });
+			dispatch(
+				open({
 					message: `Budget with ID \"${id}\" does not exist!`,
 					type: "danger",
-				}))
-			} else {
-				const budgets = JSON.parse(storageBudgets)
-				if (id === UNCATEGORIZED_ID) {
-					setBudget({
-						id: UNCATEGORIZED_ID,
-						name: UNCATEGORIZED_NAME
-					})
-					let storageExpenses = localStorage.getItem("expenses")
-					if (storageExpenses !== null) {
-						storageExpenses = JSON.parse(storageExpenses)
-						dispatch(setExpenses(storageExpenses))
-					}
-				} else {
-
-					const budget = budgets.find(value => value.id === id)
-					if (budget) {
-						setBudget(budget)
-						let storageExpenses = localStorage.getItem("expenses")
-						if (storageExpenses !== null) {
-							storageExpenses = JSON.parse(storageExpenses)
-							dispatch(setExpenses(storageExpenses))
-						}
-					} else {
-						navigate(BUDGETS_PAGE_URL, { replace: true })
-						dispatch(open({
-							message: `Budget with ID \"${id}\" does not exist!`,
-							type: "danger",
-						}))
-					}
-				}
-			}
-			closeLoader()
-		}, 2000)
-	}, [dispatch, navigate, id])
+				})
+			);
+		}
+	}, [dispatch, navigate, error]);
 
 	useEffect(() => {
-		setBudgetExpenses(expenses.filter(expense => expense.budgetId === id))
-	}, [expenses])
+		if (expensesLoading || budgetLoading) openLoader();
+		else closeLoader();
+	}, [expensesLoading, budgetLoading]);
 
 	return (
 		<div>
-			{(isLoading === false && budget !== null &&
+			{isLoading === false && budget !== null && (
 				<>
 					<div className="flex flex-col items-start my-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="my-2">
@@ -139,8 +181,8 @@ const BudgetExpenses = () => {
 									iconSize="text-sm sm:text-base md:text-lg"
 									IconLeft={FaPlus}
 									onClick={() => {
-										setData({})
-										setModalVisible(true)
+										setData({});
+										setModalVisible(true);
 									}}
 									padding="px-4 py-3"
 									rounded="rounded-lg"
@@ -149,17 +191,17 @@ const BudgetExpenses = () => {
 							</div>
 						</div>
 					</div>
-					{budgetExpenses.length > 0 ? (
+					{expenses.length > 0 ? (
 						<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-							{budgetExpenses.map((expense, index) => (
+							{expenses.map((expense, index) => (
 								<div key={index}>
-									<ExpenseCard 
-										{...expense} 
+									<ExpenseCard
+										{...expense}
 										bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
 										updateExpense={(value) => {
-											setEditMode(true)
-											setData(value)
-											setModalVisible(true)
+											setEditMode(true);
+											setData(value);
+											setModalVisible(true);
 										}}
 									/>
 								</div>
@@ -173,33 +215,37 @@ const BudgetExpenses = () => {
 							<p className="top-description">
 								There are currently no expenses for this budget.
 							</p>
-							<p className="top-description">
-								Add one now
-							</p>
+							<p className="top-description">Add one now</p>
 						</div>
 					)}
 					<Modal
 						close={() => setModalVisible(false)}
 						containerClass=""
 						component={
-							<ExpenseForm 
+							<ExpenseForm
 								data={data}
 								errors={errors}
 								loading={formLoading}
 								onChange={handleChange}
 								onSubmit={editMode ? handleUpdateExpense : handleAddExpense}
-								onReset={() => setData(prevState => ({
-									...prevState,
-									title: "",
-									description: "",
-									amount: "",
-									date: "",
-									budgetId: ""
-								}))}
+								onReset={() =>
+									setData((prevState) => ({
+										...prevState,
+										title: "",
+										description: "",
+										amount: "",
+										date: "",
+										budgetId: "",
+									}))
+								}
 							/>
 						}
-						description={`Fill in the form below to ${editMode ? "update" : "add"} an expense for the ${toCapitalize(budget.name)} budget...`}
-						title={`${editMode ? "Edit" : "Add"} ${toCapitalize(budget.name)} Budget Expenses`}
+						description={`Fill in the form below to ${
+							editMode ? "update" : "add"
+						} an expense for the ${toCapitalize(budget.name)} budget...`}
+						title={`${editMode ? "Edit" : "Add"} ${toCapitalize(
+							budget.name
+						)} Budget Expenses`}
 						visible={modalVisible}
 					/>
 				</>

@@ -1,16 +1,17 @@
 import { uid } from "uid"
 import baseApi from "./base-api-slice"
+import { UNCATEGORIZED_ID } from "../../utils"
 
 const expensesApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
 
-		createExpense: build.mutation({
+		addExpense: build.mutation({
 			queryFn: (payload) => {
 				let expenses = localStorage.getItem("expenses")
 
 				const data = { id: payload.id || uid(16), ...payload }
 
-				if (expenses === null) {
+				if (expenses !== null) {
 					expenses = JSON.parse(expenses)
 					expenses = [data, ...expenses]
 				} else {
@@ -41,30 +42,7 @@ const expensesApi = baseApi.injectEndpoints({
 			invalidatesTags: ['Expense']
 		}),
 
-		getExpenses: build.query({
-			queryFn: () => {
-				const expenses = localStorage.getItem("expenses");
-
-				if (expenses !== null) {
-					return { data: JSON.parse(expenses) };
-				}
-
-				return { data: [] }
-			},
-			providesTags: ['Expense']
-		}),
-
-		moveExpenses: build.mutation({
-			queryFn: (payload) => {
-				localStorage.setItem("expenses", JSON.stringify(payload))
-				return {
-					data: payload
-				}
-			},
-			invalidatesTags: ['Expense']
-		}),
-
-		updateExpense: build.mutation({
+		editExpense: build.mutation({
 			queryFn: (payload) => {
 				let expenses =localStorage.getItem("expenses")
 
@@ -82,22 +60,77 @@ const expensesApi = baseApi.injectEndpoints({
 				return { data: payload }
 			},
 			invalidatesTags: ['Expense']
-		})
+		}),
+
+		getExpenses: build.query({
+			queryFn: () => {
+				const expenses = localStorage.getItem("expenses");
+
+				if (expenses !== null) {
+					return { data: JSON.parse(expenses) };
+				}
+
+				return { data: [] }
+			},
+			providesTags: ['Expense']
+		}),
+
+		getBudgetExpenses: build.query({
+			queryFn: (payload) => {
+				let budgets = localStorage.getItem("budgets")
+				if (budgets === null) {
+					return { error: "Budget with specified ID does not exist" }
+				}
+				budgets = JSON.parse(budgets)
+				const budget = budgets.find(budget => budget.id === payload)
+				if (budget) {
+					const expenses = localStorage.getItem("expenses");
+
+					if (expenses !== null) {
+						return { data: JSON.parse(expenses).filter(expense => expense.budgetId === payload) };
+					}	
+
+					return { data: [] }
+				} else if (payload === UNCATEGORIZED_ID) {
+					const expenses = localStorage.getItem("expenses");
+
+					if (expenses !== null) {
+						return { data: JSON.parse(expenses).filter(expense => expense.budgetId === payload) };
+					}	
+
+					return { data: [] }
+				}
+
+				return { error: "Budget with specified ID does not exist" }
+			},
+			providesTags: ['Expense']
+		}),
+
+		moveExpenses: build.mutation({
+			queryFn: (payload) => {
+				localStorage.setItem("expenses", JSON.stringify(payload))
+				return {
+					data: payload
+				}
+			},
+			invalidatesTags: ['Expense']
+		}),
 
 	}),
 	overrideExisting: false,
 })
 
 export const {
-	useCreateExpenseMutation,
+	useAddExpenseMutation,
 
 	useDeleteExpenseMutation,
 
+	useEditExpenseMutation,
+
+	useGetBudgetExpensesQuery,
 	useGetExpensesQuery,
 
 	useMoveExpensesMutation,
-
-	useUpdateExpenseMutation
 } = expensesApi
 
 export default expensesApi
