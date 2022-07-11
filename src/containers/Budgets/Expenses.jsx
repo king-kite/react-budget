@@ -64,7 +64,6 @@ const BudgetExpenses = () => {
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
-	const [formLoading, setFormLoading] = useState(false);
 
 	const handleChange = useCallback(({ target: { name, value } }) => {
 		setData((prevState) => ({
@@ -225,7 +224,7 @@ const BudgetExpenses = () => {
 							<ExpenseForm
 								data={data}
 								errors={errors}
-								loading={formLoading}
+								loading={editMode ? editLoading : addLoading}
 								onChange={handleChange}
 								onSubmit={editMode ? handleUpdateExpense : handleAddExpense}
 								onReset={() =>

@@ -2,35 +2,46 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
+import { useGetBudgetsQuery } from "../store/features/budgets-api-slice";
+import {
+	useGetExpensesQuery,
+	useAddExpenseMutation,
+	useEditExpenseMutation,
+} from "../store/features/expenses-api-slice";
 import { setBudgets } from "../store/features/budgets-slice";
 import {
 	setExpenses,
 	addExpense,
 	updateExpense,
 } from "../store/features/expenses-slice";
-import { useLoadingContext } from "../contexts"
+import { useLoadingContext } from "../contexts";
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";
 import { ExpenseCard, ExpenseForm } from "../components/Expenses";
-import {
-	toCapitalize,
-	UNCATEGORIZED_ID,
-	UNCATEGORIZED_NAME,
-} from "../utils";
+import { toCapitalize, UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../utils";
 
 const AllExpenses = () => {
 	const dispatch = useDispatch();
-	const budgets = useSelector((state) => state.budgets.data);
-	const expenses = useSelector((state) => state.expenses.data);
 
-	const { closeLoader, openLoader } = useLoadingContext()
+	const { data: budgets, isLoading: budgetsLoading } = useGetBudgetsQuery();
+	const { data: expenses, isLoading: expensesLoading } = useGetExpensesQuery();
+
+	const [
+		addExpense,
+		{ error: addError, isLoading: addLoading, status: addStatus },
+	] = useAddExpenseMutation();
+	const [
+		editExpense,
+		{ error: editError, isLoading: editLoading, status: editStatus },
+	] = useEditExpenseMutation();
+
+	const { closeLoader, openLoader } = useLoadingContext();
 
 	const [editMode, setEditMode] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
-	const [formLoading, setFormLoading] = useState(false);
 
 	const handleChange = useCallback(({ target: { name, value } }) => {
 		setData((prevState) => ({
@@ -46,97 +57,94 @@ const AllExpenses = () => {
 
 	const handleAddExpense = useCallback(
 		(value) => {
-			setFormLoading(true);
-			setTimeout(() => {
-				if (value.budgetId === UNCATEGORIZED_ID)
+			if (value.budgetId === UNCATEGORIZED_ID)
+				Object.assign(value, {
+					budgetName: UNCATEGORIZED_NAME,
+					budgetId: UNCATEGORIZED_ID,
+				});
+			else {
+				const budget = budgets
+					? budgets.find((b) => b.id === value.budgetId)
+					: null;
+				if (budget)
 					Object.assign(value, {
-						budgetName: UNCATEGORIZED_NAME,
-						budgetId: UNCATEGORIZED_ID,
+						budgetName: budget.name,
+						budgetId: budget.id,
 					});
 				else {
-					const budget = budgets.find((b) => b.id === value.budgetId);
-					if (budget)
-						Object.assign(value, {
-							budgetName: budget.name,
-							budgetId: budget.id,
-						});
-					else {
-						setFormLoading(false);
-						return setErrors((prevState) => ({
-							...prevState,
-							budgetId: `Budget with ID ${value.budgetId} was not found`,
-						}));
-					}
+					return setErrors((prevState) => ({
+						...prevState,
+						budgetId: `Budget with ID ${value.budgetId} was not found`,
+					}));
 				}
-				setModalVisible(false);
-				setData({});
-				dispatch(addExpense(value));
-				dispatch(
-					open({
-						type: "success",
-						message: "Expense was added successfully!",
-					})
-				);
-				setFormLoading(false);
-			}, 2000);
+			}
+			addExpense(value);
 		},
-		[dispatch, budgets]
+		[budgets, addExpense]
 	);
 
 	const handleUpdateExpense = useCallback(
 		(value) => {
-			setFormLoading(true);
-			setTimeout(() => {
-				if (value.budgetId === UNCATEGORIZED_ID)
+			if (value.budgetId === UNCATEGORIZED_ID)
+				Object.assign(value, {
+					budgetName: UNCATEGORIZED_NAME,
+					budgetId: UNCATEGORIZED_ID,
+				});
+			else {
+				const budget = budgets
+					? budgets.find((b) => b.id === value.budgetId)
+					: null;
+				if (budget) {
 					Object.assign(value, {
-						budgetName: UNCATEGORIZED_NAME,
-						budgetId: UNCATEGORIZED_ID,
+						budgetName: budget.name,
+						budgetId: budget.id,
 					});
-				else {
-					const budget = budgets.find((b) => b.id === value.budgetId);
-					if (budget) {
-						Object.assign(value, {
-							budgetName: budget.name,
-							budgetId: budget.id,
-						});
-						dispatch(updateExpense(value));
-						setModalVisible(false);
-						setData({});
-						setEditMode(false);
-						dispatch(
-							open({
-								type: "success",
-								message: "Expense was updated successfully!",
-							})
-						);
-					} else
-						setErrors((prevState) => ({
-							...prevState,
-							budgetId: `Budget with ID ${value.budgetId} was not found`,
-						}));
-				}
-				setFormLoading(false);
-			}, 2000);
+				} else
+					setErrors((prevState) => ({
+						...prevState,
+						budgetId: `Budget with ID ${value.budgetId} was not found`,
+					}));
+			}
+			editExpense(value);
 		},
-		[dispatch, budgets]
+		[editExpense, budgets]
 	);
 
 	useEffect(() => {
-		openLoader()
-		setTimeout(() => {
-			let storageBudgets = localStorage.getItem("budgets");
-			let storageExpenses = localStorage.getItem("expenses");
-			if (storageExpenses !== null) {
-				storageExpenses = JSON.parse(storageExpenses);
-				dispatch(setExpenses(storageExpenses));
-			}
-			if (storageBudgets !== null) {
-				storageBudgets = JSON.parse(storageBudgets);
-				dispatch(setBudgets(storageBudgets));
-			}
-			closeLoader()
-		}, 2000);
-	}, [dispatch]);
+		if (budgetsLoading || expensesLoading) openLoader();
+		else closeLoader();
+	}, [budgetsLoading, expensesLoading]);
+
+	useEffect(() => {
+		if (addStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Expense was added successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+		} else if (addStatus === "rejected" && addError) {
+			console.log("ADD EXPENSE ERROR :>> ", addError);
+		}
+	}, [addStatus, addError]);
+
+	useEffect(() => {
+		if (editStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Expense was updated successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+			setEditMode(false);
+		} else if (editStatus === "rejected" && editError) {
+			console.log("ADD EXPENSE ERROR :>> ", editError);
+		}
+	}, [editStatus, editError]);
 
 	return (
 		<div>
@@ -154,7 +162,11 @@ const AllExpenses = () => {
 							caps
 							iconSize="text-sm sm:text-base md:text-lg"
 							IconLeft={FaPlus}
-							onClick={() => setModalVisible(true)}
+							onClick={() => {
+								setData({});
+								setEditMode(false);
+								setModalVisible(true);
+							}}
 							padding="px-4 py-3"
 							rounded="rounded-lg"
 							title="add expense"
@@ -162,7 +174,7 @@ const AllExpenses = () => {
 					</div>
 				</div>
 			</div>
-			{expenses.length > 0 ? (
+			{expenses && expenses.length > 0 ? (
 				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
 					{expenses.map((expense, index) => (
 						<div key={index}>
@@ -192,10 +204,10 @@ const AllExpenses = () => {
 				containerClass=""
 				component={
 					<ExpenseForm
-						budgets={budgets}
+						budgets={budgets || []}
 						data={data}
 						errors={errors}
-						loading={formLoading}
+						loading={editMode ? editLoading : addLoading}
 						onChange={handleChange}
 						onSubmit={editMode ? handleUpdateExpense : handleAddExpense}
 						onReset={() =>
