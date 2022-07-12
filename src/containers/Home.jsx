@@ -88,11 +88,11 @@ const Dashboard = () => {
 					</div>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
 						{budgets.slice(0, 6).map((budget, index) => {
-							const currentAmount = expenses.reduce((totalAmount, expense) => {
+							const currentAmount =  expenses ? expenses.reduce((totalAmount, expense) => {
 								if (expense.budgetId === budget.id)
 									return parseFloat(totalAmount) + parseFloat(expense.amount);
 								else return totalAmount;
-							}, 0);
+							}, 0) : 0;
 
 							return (
 								<div key={index}>
