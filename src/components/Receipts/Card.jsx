@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { FaCloudDownloadAlt, FaPen, FaTrash } from "react-icons/fa";
 import { open } from "../../store/features/alert-slice"
-import { deleteReceipt } from "../../store/features/receipts-slice";
+import { useDeleteReceiptMutation } from "../../store/features/receipts-api-slice"
 import { Button } from "../controls"
 import { currencyFormatter, LoadingPage, toCapitalize, downloadFile } from "../../utils";
 
@@ -17,9 +17,10 @@ const Card = ({
 	updateReceipt,
 	showEditDeleteButton=true
 }) => {
-	const [loading, setLoading] = useState(false);
 
 	const dispatch = useDispatch();
+
+	const [deleteReceipt, { isLoading, error, status }] = useDeleteReceiptMutation()
 
 	const handleDelete = useCallback(() => {
 		const _delete = window.confirm(
@@ -28,17 +29,20 @@ const Card = ({
 			)} Receipt?`
 		);
 		if (_delete === true) {
-			setLoading(true);
-			setTimeout(() => {
-				dispatch(deleteReceipt(id));
-				dispatch(open({
-					type: 'success',
-					message: `${toCapitalize(title)} Receipt was deleted successfully`
-				}))
-				setLoading(false);
-			}, 2000);
+				deleteReceipt(id);
 		}
-	}, [dispatch, id, title]);
+	}, [deleteReceipt, id]);
+
+	useEffect(() => {
+		if (status === "fulfilled") {
+			dispatch(open({
+				type: 'success',
+				message: `\"${toCapitalize(title)}\" Receipt was deleted successfully`
+			}))
+		} else if (status === "rejected" && error) {
+			console.log("DELETE RECEIPT ERROR :>> ", error)
+		}
+	}, [status, error])
 
 	return (
 		<div
@@ -119,7 +123,7 @@ const Card = ({
 						/>
 					</div>
 				</div>
-			{loading && <LoadingPage className="absolute rounded-lg" />}
+			{isLoading && <LoadingPage className="absolute rounded-lg" />}
 		</div>
 	);
 };

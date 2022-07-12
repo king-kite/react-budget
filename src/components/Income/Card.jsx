@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { open } from "../../store/features/alert-slice"

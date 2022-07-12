@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { FaEye, FaPen, FaTrash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { BUDGET_DETAIL_PAGE_URL, BUDGET_EXPENSES_PAGE_URL } from "../../config";
@@ -32,8 +32,6 @@ const Card = ({
 	showDetailButton = true,
 }) => {
 	const ratio = currentAmount / amount;
-
-	const [loading, setLoading] = useState(false);
 
 	const { data: expenses, isLoading: expensesLoading } = useGetExpensesQuery();
 
@@ -82,7 +80,6 @@ const Card = ({
 				moveExpensesToUncategorized(id);
 				deleteBudget(id);
 			}
-			setLoading(false);
 		}
 	}, [deleteBudget, id, name, moveExpensesToUncategorized]);
 

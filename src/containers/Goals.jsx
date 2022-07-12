@@ -124,7 +124,11 @@ const Goals = () => {
 							caps
 							iconSize="text-sm sm:text-base md:text-lg"
 							IconLeft={FaPlus}
-							onClick={() => setModalVisible(true)}
+							onClick={() => {
+								setEditMode(false)
+								setData({})
+								setModalVisible(true)
+							}}
 							padding="px-4 py-3"
 							rounded="rounded-lg"
 							title="add goal"

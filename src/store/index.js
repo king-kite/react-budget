@@ -5,8 +5,6 @@ import { NODE_ENV } from "../config";
 
 import alertReducer from "./features/alert-slice";
 import authReducer from "./features/auth-slice";
-import goalsReducer from "./features/goals-slice";
-import receiptsReducer from "./features/receipts-slice";
 
 import baseApi from "./features/base-api-slice";
 
@@ -15,8 +13,6 @@ const store = configureStore({
   reducer: {
     alert: alertReducer,
     auth: authReducer,
-    goals: goalsReducer,
-    receipts: receiptsReducer,
 
     [baseApi.reducerPath]: baseApi.reducer,
   },

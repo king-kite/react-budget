@@ -2,7 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaPlus } from "react-icons/fa";
 import { open } from "../store/features/alert-slice";
-import { setReceipts, addReceipt, updateReceipt } from "../store/features/receipts-slice";
+import {
+	useGetReceiptsQuery,
+	useAddReceiptMutation,
+	useEditReceiptMutation,
+} from "../store/features/receipts-api-slice";
 import { useLoadingContext } from "../contexts"
 import { Button } from "../components/controls";
 import { Modal } from "../components/common";
@@ -11,7 +15,18 @@ import { toCapitalize } from "../utils";
 
 const Receipts = () => {
 	const dispatch = useDispatch();
-	const receipts = useSelector((state) => state.receipts.data);
+	
+	const { data: receipts, isLoading } = useGetReceiptsQuery();
+
+	const [
+		addReceipt,
+		{ status: addStatus, isLoading: addLoading, error: addError },
+	] = useAddReceiptMutation();
+	const [
+		editReceipt,
+		{ status: editStatus, isLoading: editLoading, error: editError },
+	] = useEditReceiptMutation();
+
 	const { openLoader, closeLoader }  = useLoadingContext()
 
 	const [editMode, setEditMode] = useState(false);
@@ -19,7 +34,6 @@ const Receipts = () => {
 
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
-	const [formLoading, setFormLoading] = useState(false);
 
 	const handleChange = useCallback(({ target: { files, type, name, value } }) => {
 		setData((prevState) => ({
@@ -34,62 +48,67 @@ const Receipts = () => {
 	}, []);
 
 	const handleAddReceipt = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
+		if (value.document) {
+			const documentUrl = URL.createObjectURL(new Blob([value.document], { type: '*' }))
+			Object.assign(value, {file: documentUrl, document: undefined})	
+		}
+		addReceipt(value)
+	}, [addReceipt])
+
+	const handleUpdateReceipt = useCallback((value) => {
+		const receipt = receipts.find(data => data.id === value.id)
+		if (receipt) {
 			if (value.document) {
 				const documentUrl = URL.createObjectURL(new Blob([value.document], { type: '*' }))
 				Object.assign(value, {file: documentUrl, document: undefined})	
 			}
-			dispatch(addReceipt(value))
+			editReceipt(value)
+		} else {
 			setModalVisible(false)
-			dispatch(open({
-				type: "success",
-				message: "Receipt was added successfully!"
-			}))
+			setEditMode(false)
 			setData({})
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch])
-
-	const handleUpdateReceipt = useCallback((value) => {
-		setFormLoading(true)
-		setTimeout(() => {
-			const receipt = receipts.find(data => data.id === value.id)
-			if (receipt) {
-				if (value.document) {
-					const documentUrl = URL.createObjectURL(new Blob([value.document], { type: '*' }))
-					Object.assign(value, {file: documentUrl, document: undefined})	
-				}
-				dispatch(updateReceipt(value))
-				dispatch(open({
-					type: "success",
-					message: "Receipt was updated successfully!"
-				}))
-				setModalVisible(false)
-				setEditMode(false)
-				setData({})
-			} else {
-				setModalVisible(false)
-				dispatch(open({
-					type: "danger", 
-					message: `Receipt with ID ${value.id} was not found`
-				}))
-			} 
-			setFormLoading(false)
-		}, 2000)
-	}, [dispatch, receipts])
+			dispatch(open({
+				type: "danger", 
+				message: `Receipt with ID ${value.id} was not found`
+			}))
+		} 
+	}, [editReceipt, receipts, dispatch])
 
 	useEffect(() => {
-		openLoader()
-		setTimeout(() => {
-			let storageReceipts = localStorage.getItem("receipts");
-			if (storageReceipts !== null) {
-				storageReceipts = JSON.parse(storageReceipts);
-				dispatch(setReceipts(storageReceipts));
-			}
-			closeLoader()
-		}, 2000);
-	}, [dispatch]);
+		if (isLoading) openLoader();
+		else closeLoader();
+	}, [isLoading]);
+
+	useEffect(() => {
+		if (addStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Receipt was added successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+		} else if (addStatus === "rejected" && addError) {
+			console.log("ADD RECEIPT ERROR :>> ", addError);
+		}
+	}, [addStatus, addError]);
+
+	useEffect(() => {
+		if (editStatus === "fulfilled") {
+			dispatch(
+				open({
+					type: "success",
+					message: "Receipt was updated successfully!",
+				})
+			);
+			setModalVisible(false);
+			setData({});
+			setEditMode(false);
+		} else if (editStatus === "rejected" && editError) {
+			console.log("EDIT RECEIPT ERROR :>> ", editError);
+		}
+	}, [editStatus, editError]);
 
 	return (
 		<div>
@@ -107,7 +126,11 @@ const Receipts = () => {
 							caps
 							iconSize="text-sm sm:text-base md:text-lg"
 							IconLeft={FaPlus}
-							onClick={() => setModalVisible(true)}
+							onClick={() => {
+								setEditMode(false)
+								setData({})
+								setModalVisible(true)
+							}}
 							padding="px-4 py-3"
 							rounded="rounded-lg"
 							title="add receipt"
@@ -115,7 +138,7 @@ const Receipts = () => {
 					</div>
 				</div>
 			</div>
-			{receipts.length > 0 ? (
+			{receipts && receipts.length > 0 ? (
 				<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
 					{receipts.map((receipt, index) => (
 						<div key={index}>
@@ -148,7 +171,7 @@ const Receipts = () => {
 						editMode={editMode}
 						data={data}
 						errors={errors}
-						loading={formLoading}
+						loading={editMode ? editLoading : addLoading}
 						onChange={handleChange}
 						onSubmit={editMode ? handleUpdateReceipt : handleAddReceipt}
 						onReset={() =>
