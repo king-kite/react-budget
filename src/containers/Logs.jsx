@@ -5,7 +5,7 @@ import { FaBook, FaTrash } from "react-icons/fa"
 import { open } from "../store/features/alert-slice"
 import { useGetLogsQuery, useDeleteAllLogsMutation } from "../store/features/logs-api-slice";
 import { useLoadingContext } from "../contexts"
-import { Log } from "../components/Logs";
+import { Log } from "../components/HistoryLogs";
 import { Button } from "../components/controls"
 
 const Logs = () => {
