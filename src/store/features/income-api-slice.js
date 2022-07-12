@@ -1,5 +1,7 @@
 import { uid } from "uid";
 import baseApi from "./base-api-slice";
+import { generateLog } from "../firebase/utils"
+import { toCapitalize } from "../../utils"
 
 const incomeApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
@@ -17,9 +19,13 @@ const incomeApi = baseApi.injectEndpoints({
 				}
 
 				localStorage.setItem("income", JSON.stringify(income));
+				generateLog({
+					type: "create",
+					message: `${toCapitalize(data.title)} was created`
+				})
 				return { data };
 			},
-			invalidatesTags: ["Income"],
+			invalidatesTags: ["Income", "Log"],
 		}),
 
 		deleteIncome: build.mutation({
@@ -31,12 +37,17 @@ const incomeApi = baseApi.injectEndpoints({
 				}
 
 				income = JSON.parse(income);
+				const data = income.find(data => data.id === payload)
 				income = income.filter((data) => data.id !== payload);
 				localStorage.setItem("income", JSON.stringify(income));
-
+				if (data)
+					generateLog({
+						type: "delete",
+						message: `${toCapitalize(data.title)} was deleted`
+					})
 				return { data: "success" };
 			},
-			invalidatesTags: ["Income"],
+			invalidatesTags: ["Income", "Log"],
 		}),
 
 		editIncome: build.mutation({
@@ -54,9 +65,13 @@ const incomeApi = baseApi.injectEndpoints({
 					Object.assign(singleIncome, payload);
 				}
 				localStorage.setItem("income", JSON.stringify(income));
+				generateLog({
+					type: "update",
+					message: `${toCapitalize(singleIncome.title)} was updated`
+				})
 				return { data: payload };
 			},
-			invalidatesTags: ["Income"],
+			invalidatesTags: ["Income","Log"],
 		}),
 
 		getIncome: build.query({

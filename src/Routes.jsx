@@ -19,7 +19,7 @@ import BudgetExpensesPage from "./pages/budgets/expenses";
 import ExpensesPage from "./pages/expenses";
 import GoalsPage from "./pages/goals";
 import IncomePage from "./pages/income";
-import LiteracyPage from "./pages/literacy";
+import LogsPage from "./pages/logs";
 import ReceiptsPage from "./pages/receipts";
 
 const AppRoutes = () => (
@@ -64,8 +64,8 @@ const AppRoutes = () => (
 					/>
 
 					<Route
-						path={routes.LITERACY_PAGE_URL}
-						element={<LiteracyPage />}
+						path={routes.LOGS_PAGE_URL}
+						element={<LogsPage />}
 					/>
 
 					<Route

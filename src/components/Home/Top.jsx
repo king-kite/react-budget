@@ -16,6 +16,7 @@ const Top = ({ onRefresh }) => (
 				<Button 
 					bg="bg-primary-600 hover:bg-primary-500"
 					caps
+					focus="focus:ring-2 focus:ring-offset-1 focus:ring-primary-300"
 					iconSize="text-sm sm:text-base md:text-lg"
 					IconLeft={BiRefresh}
 					onClick={onRefresh}

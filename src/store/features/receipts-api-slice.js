@@ -1,5 +1,7 @@
 import { uid } from "uid";
 import baseApi from "./base-api-slice";
+import { generateLog } from "../firebase/utils"
+import { toCapitalize } from "../../utils"
 
 const receiptsApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
@@ -17,9 +19,13 @@ const receiptsApi = baseApi.injectEndpoints({
 				}
 
 				localStorage.setItem("receipts", JSON.stringify(receipts));
+				generateLog({
+					type: "create",
+					message: `${toCapitalize(data.title)} was created`
+				})
 				return { data };
 			},
-			invalidatesTags: ["Receipt"],
+			invalidatesTags: ["Receipt", "Log"],
 		}),
 
 		deleteReceipt: build.mutation({
@@ -31,12 +37,17 @@ const receiptsApi = baseApi.injectEndpoints({
 				}
 
 				receipts = JSON.parse(receipts);
+				const receipt = receipts.find(data => data.id === payload)
 				receipts = receipts.filter((data) => data.id !== payload);
 				localStorage.setItem("receipts", JSON.stringify(receipts));
-
+				if (receipt)
+					generateLog({
+						type: "delete",
+						message: `${toCapitalize(receipt.title)} was deleted`
+					})
 				return { data: "success" };
 			},
-			invalidatesTags: ["Receipt"],
+			invalidatesTags: ["Receipt", "Log"],
 		}),
 
 		editReceipt: build.mutation({
@@ -54,6 +65,10 @@ const receiptsApi = baseApi.injectEndpoints({
 					Object.assign(singleReceipt, payload);
 				}
 				localStorage.setItem("receipts", JSON.stringify(receipts));
+				generateLog({
+					type: "update",
+					message: `${toCapitalize(singleReceipt.title)} was updated`
+				})
 				return { data: payload };
 			},
 			invalidatesTags: ["Receipt"],

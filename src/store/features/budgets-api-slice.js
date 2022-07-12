@@ -1,5 +1,7 @@
 import { uid } from "uid";
 import baseApi from "./base-api-slice";
+import { generateLog } from "../firebase/utils";
+import { toCapitalize } from "../../utils"
 
 const budgetsApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
@@ -17,9 +19,13 @@ const budgetsApi = baseApi.injectEndpoints({
 				}
 
 				localStorage.setItem("budgets", JSON.stringify(budgets));
+				generateLog({
+					type: "create",
+					message: `${toCapitalize(payload.name)} budget was created`
+				})
 				return { data };
 			},
-			invalidatesTags: ["Budget"],
+			invalidatesTags: ["Budget", "Log"],
 		}),
 
 		deleteBudget: build.mutation({
@@ -31,12 +37,20 @@ const budgetsApi = baseApi.injectEndpoints({
 				}
 
 				budgets = JSON.parse(budgets);
+				let budget = budgets.find(data => data.id === payload)
 				budgets = budgets.filter((data) => data.id !== payload);
 				localStorage.setItem("budgets", JSON.stringify(budgets));
 
+				if (budget) {
+					generateLog({
+						type: "delete",
+						message: `${toCapitalize(budget.name)} budget was deleted`
+					})	
+				}
+
 				return { data: "success" };
 			},
-			invalidatesTags: ["Budget"],
+			invalidatesTags: ["Budget", "Log"],
 		}),
 
 		editBudget: build.mutation({
@@ -54,9 +68,13 @@ const budgetsApi = baseApi.injectEndpoints({
 					Object.assign(budget, payload);
 				}
 				localStorage.setItem("budgets", JSON.stringify(budgets));
+				generateLog({
+					type: "update",
+					message: `${toCapitalize(budget.name)} budget was updated`
+				})	
 				return { data: payload };
 			},
-			invalidatesTags: ["Budget"],
+			invalidatesTags: ["Budget", "Log"],
 		}),
 
 		getBudget: build.query({

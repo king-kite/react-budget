@@ -1,6 +1,7 @@
 import { uid } from "uid"
 import baseApi from "./base-api-slice"
-import { UNCATEGORIZED_ID } from "../../utils"
+import { generateLog } from "../firebase/utils"
+import { toCapitalize, UNCATEGORIZED_ID } from "../../utils"
 
 const expensesApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
@@ -19,9 +20,13 @@ const expensesApi = baseApi.injectEndpoints({
 				}
 				
 				localStorage.setItem("expenses", JSON.stringify(expenses))
+				generateLog({
+					type: "create",
+					message: `${toCapitalize(data.title)} was created`
+				})
 				return { data }
 			},
-			invalidatesTags: ['Expense']
+			invalidatesTags: ['Expense', 'Log']
 		}),
 
 		deleteExpense: build.mutation({
@@ -34,12 +39,18 @@ const expensesApi = baseApi.injectEndpoints({
 				}
 
 				expenses = JSON.parse(expenses)
+				const expense = expenses.find(data => data.id === payload)
 				expenses = expenses.filter(data => data.id !== payload)
 				localStorage.setItem("expenses", JSON.stringify(expenses))
-				
+				if (expense) {
+					generateLog({
+						type: "delete",
+						message: `${toCapitalize(expense.title)} was deleted`
+					})	
+				}
 				return { data: "success" }
 			},
-			invalidatesTags: ['Expense']
+			invalidatesTags: ['Expense', 'Log']
 		}),
 
 		editExpense: build.mutation({
@@ -56,10 +67,14 @@ const expensesApi = baseApi.injectEndpoints({
 				if (expense) {
 					Object.assign(expense, payload)
 				}
+				generateLog({
+					type: "update",
+					message: `${toCapitalize(expense.title)} was updated`
+				})
 				localStorage.setItem("expenses", JSON.stringify(expenses))
 				return { data: payload }
 			},
-			invalidatesTags: ['Expense']
+			invalidatesTags: ['Expense', 'Log']
 		}),
 
 		getExpenses: build.query({

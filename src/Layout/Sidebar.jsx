@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import {
 	FaArrowCircleRight,
 	FaArrowCircleLeft,
-	FaChartLine,
+	FaBook,
 	FaMoneyBillWave,
 	FaMoneyCheck,
 	FaReceipt,
@@ -52,9 +52,9 @@ const links = [
 		title: "receipts",
 	},
 	{
-		Icon: FaChartLine,
-		href: routes.LITERACY_PAGE_URL,
-		title: "literacy",
+		Icon: FaBook,
+		href: routes.LOGS_PAGE_URL,
+		title: "logs",
 	},
 ];
 

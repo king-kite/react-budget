@@ -1,5 +1,7 @@
 import { uid } from "uid";
 import baseApi from "./base-api-slice";
+import { generateLog } from "../firebase/utils";
+import { toCapitalize } from "../../utils";
 
 const goalsApi = baseApi.injectEndpoints({
 	endpoints: (build) => ({
@@ -17,9 +19,14 @@ const goalsApi = baseApi.injectEndpoints({
 				}
 
 				localStorage.setItem("goals", JSON.stringify(goals));
+
+				generateLog({
+					type: "create",
+					message: `${toCapitalize(data.name)} was created`
+				})
 				return { data };
 			},
-			invalidatesTags: ["Goal"],
+			invalidatesTags: ["Goal", "Log"],
 		}),
 
 		deleteGoal: build.mutation({
@@ -31,12 +38,20 @@ const goalsApi = baseApi.injectEndpoints({
 				}
 
 				goals = JSON.parse(goals);
+				const goal = goals.find(data => data.id === payload)
 				goals = goals.filter((data) => data.id !== payload);
 				localStorage.setItem("goals", JSON.stringify(goals));
 
+				if (goal) {
+					generateLog({
+						type: "delete",
+						message: `${toCapitalize(goal.name)} was deleted`
+					})
+				}
+
 				return { data: "success" };
 			},
-			invalidatesTags: ["Goal"],
+			invalidatesTags: ["Goal", "Log"],
 		}),
 
 		editGoal: build.mutation({
@@ -54,9 +69,13 @@ const goalsApi = baseApi.injectEndpoints({
 					Object.assign(singleGoal, payload);
 				}
 				localStorage.setItem("goals", JSON.stringify(goals));
+				generateLog({
+					type: "update",
+					message: `${toCapitalize(singleGoal.name)} was updated`
+				})
 				return { data: payload };
 			},
-			invalidatesTags: ["Goal"],
+			invalidatesTags: ["Goal", "Log"],
 		}),
 
 		getGoals: build.query({
