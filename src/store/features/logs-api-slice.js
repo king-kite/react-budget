@@ -20,6 +20,14 @@ const logsApi = baseApi.injectEndpoints({
 			invalidatesTags: ["Log"],
 		}),
 
+		deleteAllLogs: build.mutation({
+			queryFn: () => {
+				localStorage.removeItem("logs")
+				return { data: "success" }
+			},
+			invalidatesTags: ["Log"]
+		}),
+
 		getLogs: build.query({
 			queryFn: () => {
 				const logs = localStorage.getItem("logs");
@@ -38,6 +46,7 @@ const logsApi = baseApi.injectEndpoints({
 
 export const {
 	useDeleteLogMutation,
+	useDeleteAllLogsMutation,
 
 	useGetLogsQuery,
 } = logsApi;
