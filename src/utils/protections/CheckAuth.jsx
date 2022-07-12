@@ -2,22 +2,29 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux"
 import { Outlet } from "react-router-dom";
 import { login, logout } from "../../store/features/auth-slice"
+import { useCheckAuthQuery } from "../../store/features/auth-api-slice"
 import { SplashScreen } from "../../components/common";
 
 const CheckAuth = () => {
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(true)
 
+	const { data, isLoading, isError, isSuccess } = useCheckAuthQuery()
+
 	useEffect(() => {
-		const user = localStorage.getItem('user')
 		setTimeout(() => {
-			if (user) dispatch(login(JSON.parse(user)))
-			else dispatch(logout())
 			setLoading(false)
 		}, 2000)
 	}, [dispatch])
 
-	return loading ? <SplashScreen /> : <Outlet />
+	useEffect(() => {
+		if (isLoading === false && loading === false) {
+			if (isSuccess && data) dispatch(login(data))
+			else if (isError) dispatch(logout())
+		}
+	}, [loading, isLoading, isError, isSuccess, data])
+
+	return loading || isLoading ? <SplashScreen /> : <Outlet />
 }
 
 export default CheckAuth;

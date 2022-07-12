@@ -9,12 +9,13 @@ import {
 } from "../../config";
 import { close, open } from "../../store/features/alert-slice";
 import { login } from "../../store/features/auth-slice";
+import { useLoginMutation } from "../../store/features/auth-api-slice"
 import { Alert, Button, Input } from "../../components/controls";
 
 const Login = () => {
-  const [error, setError] = useState({});
-  const [status, setStatus] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [errors, setError] = useState({});
+
+  const [signIn, { data, isLoading, error, status }] = useLoginMutation()
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -27,38 +28,14 @@ const Login = () => {
   const handleSubmit = useCallback(
     (username, password) => {
       setError({});
-      setLoading(true);
-      setStatus("pending");
-      setTimeout(() => {
-        let user = localStorage.getItem("user");
-        if (user === null)
-          dispatch(
-            open({
-              type: "danger",
-              message: "User does not exist",
-            })
-          );
-        else {
-          user = JSON.parse(user);
-          if (username === user.username && password === user.password) {
-            setStatus("fulfilled");
-            dispatch(login(user));
-          } else {
-            setError({
-              ...error,
-              detail: "Unable to login with provided credentials!",
-            });
-            setStatus("rejected");
-          }
-        }
-        setLoading(false);
-      }, 2000);
+      signIn({ username, password })
     },
-    [dispatch]
+    [signIn]
   );
 
   useEffect(() => {
-    if (status === "fulfilled") {
+    if (status === "fulfilled" && data) {
+      dispatch(login(data))
       dispatch(
         open({
           message: "Logged in Successfully!",
@@ -67,7 +44,7 @@ const Login = () => {
       );
       setUsername("");
       setPassword("");
-    } else if (status === "rejected" && (error?.error || error?.detail)) {
+    } else if (status === "rejected" && (error)) {
       dispatch(
         open({
           message: String(
@@ -76,8 +53,9 @@ const Login = () => {
           type: "danger",
         })
       );
+      console.log("LOGIN ERROR :>> ", error)
     }
-  }, [dispatch, status, error]);
+  }, [status, data, error]);
 
   return (
     <div className="bg-gray-200 flex flex-row-reverse min-h-screen items-center justify-between w-full">
@@ -118,7 +96,7 @@ const Login = () => {
                     bdrColor="border border-gray-300"
                     color="text-gray-700"
                     disabled={isLoading}
-                    error={error?.username}
+                    error={error?.username || errors?.username}
                     label="Username"
                     labelColor="text-gray-700"
                     onChange={(e) => setUsername(e.target.value)}
@@ -135,7 +113,7 @@ const Login = () => {
                     bdrColor="border border-gray-300"
                     color="text-gray-700"
                     disabled={isLoading}
-                    error={error?.password}
+                    error={error?.password || errors?.password}
                     label="Password"
                     labelColor="text-gray-700"
                     onChange={(e) => setPassword(e.target.value)}

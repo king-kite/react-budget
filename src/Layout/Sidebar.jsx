@@ -1,4 +1,4 @@
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import {
@@ -16,6 +16,8 @@ import {
 import { APP_NAME, LOGO_IMAGE } from "../config";
 import * as routes from "../config/routes";
 import { logout } from "../store/features/auth-slice";
+import { useLogoutMutation } from "../store/features/auth-api-slice"
+import { useLoadingContext } from "../contexts"
 import AppLink from "./Link";
 
 const links = [
@@ -61,10 +63,27 @@ const Header = forwardRef(
 		const dispatch = useDispatch()
 		const navigate = useNavigate()
 
+		const { openLoader, closeLoader } = useLoadingContext()
+
+		const [signOut, { isLoading, status, error }] = useLogoutMutation()
+
 		const handleLogout = useCallback(() => {
-			dispatch(logout())
-			navigate(routes.LOGIN_PAGE_URL, { replace: true })
-		}, [dispatch, navigate])
+			signOut()
+		}, [signOut])
+
+		useEffect(() => {
+			if (isLoading) openLoader()
+			else closeLoader()
+		}, [isLoading])
+
+		useEffect(() => {
+			if (status === "fulfilled") {
+				dispatch(logout())
+				navigate(routes.LOGIN_PAGE_URL, { replace: true })
+			} else if (status === "rejected" && error) {
+				console.log("AUTH LOGOUT ERROR :>> ", error)
+			}
+		}, [status, error])
 
 		return (
 			<header

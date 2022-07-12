@@ -1,53 +1,62 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { FaLock } from "react-icons/fa"
-import { APP_NAME, LOGO_IMAGE, LOGIN_PAGE_URL } from "../../config"
+import { FaLock } from "react-icons/fa";
+import { APP_NAME, LOGO_IMAGE, LOGIN_PAGE_URL } from "../../config";
 import { close, open } from "../../store/features/alert-slice";
+import { useRegisterMutation } from "../../store/features/auth-api-slice";
 import { Alert, Button, Input } from "../../components/controls";
 
 const Login = () => {
-  const [error, setError] = useState({})
-  const [status, setStatus] = useState("")
-  const [isLoading, setLoading] = useState(false)
+  const [errors, setError] = useState({});
+  const [register, { isLoading, error, status }] = useRegisterMutation();
 
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
   const message = useSelector((state) => state.alert.message);
   const type = useSelector((state) => state.alert.type);
   const visible = useSelector((state) => state.alert.visible);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleSubmit = useCallback((username, password) => {
-    setError({})
-    setLoading(true)
-    setStatus("pending")
-    setTimeout(() => {
+  const handleSubmit = useCallback(
+    (username, password) => {
+      setError({});
       if (username === null || username === undefined) {
-        setError(prevState => ({...prevState, username: "Username is required"}))
+        setError((prevState) => ({
+          ...prevState,
+          username: "Username is required",
+        }));
       }
       if (password === null || password === undefined) {
-        setError(prevState => ({...prevState, password: "Username is required"}))
+        setError((prevState) => ({
+          ...prevState,
+          password: "Username is required",
+        }));
       }
-      if (username && password) {
-        localStorage.setItem("user", JSON.stringify({username, password}))
-        dispatch(
-          open({
-            message: "Registration was successful!",
-            type: "success",
-          })
-        );
-        setUsername("")
-        setPassword("")
-        setError({})
-        navigate(LOGIN_PAGE_URL)
-      }
-      setLoading(false)
-    }, 2000)
-  }, [dispatch, navigate]);
+      if (username && password) register({ username, password });
+    },
+    [register]
+  );
+
+  useEffect(() => {
+    if (status === "fulfilled") {
+      dispatch(
+        open({
+          message: "Registration was successful!",
+          type: "success",
+        })
+      );
+      setUsername("");
+      setPassword("");
+      setError({});
+      navigate(LOGIN_PAGE_URL);
+    } else if (status === "rejected" && error) {
+      console.log("AUTH REGISTER ERROR :>> ", error);
+    }
+  }, [status, error]);
 
   return (
     <div className="bg-gray-200 flex flex-row-reverse min-h-screen items-center justify-between w-full">
@@ -72,12 +81,14 @@ const Login = () => {
                 visible={visible}
               />
             </div>
-            <form className="space-y-6"
+            <form
+              className="space-y-6"
               onSubmit={(e) => {
                 e.preventDefault();
-                dispatch(close())
+                dispatch(close());
                 handleSubmit(username, password);
-              }}>
+              }}
+            >
               <div className="rounded-md shadow-sm -space-y-px">
                 <div className="my-4">
                   <Input
@@ -86,7 +97,7 @@ const Login = () => {
                     bdrColor="border border-gray-300"
                     color="text-gray-700"
                     disabled={isLoading}
-                    error={error?.username}
+                    error={error?.username || errors?.usernmae}
                     label="Username"
                     labelColor="text-gray-700"
                     onChange={(e) => setUsername(e.target.value)}
@@ -103,7 +114,7 @@ const Login = () => {
                     bdrColor="border border-gray-300"
                     color="text-gray-700"
                     disabled={isLoading}
-                    error={error?.password}
+                    error={error?.password || errors?.password}
                     label="Password"
                     labelColor="text-gray-700"
                     onChange={(e) => setPassword(e.target.value)}
