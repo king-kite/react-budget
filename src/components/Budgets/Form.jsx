@@ -7,7 +7,7 @@ const Form = ({ data, errors, loading, onChange, onSubmit, onReset }) => (
 			e.preventDefault()
 			onSubmit({
 				...data,
-				name: data.name.toLowerCase(),
+				name: data.name.toLowerCase().trim(),
 			})
 		}} 
 		className="p-4 lg:px-2"

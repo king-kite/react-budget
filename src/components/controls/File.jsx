@@ -94,7 +94,7 @@ const File = forwardRef(({
 				</p>
 			)}
 			{error && (
-				<p className={`capitalize font-primary font-semibold italic mt-1 text-red-500 ${errorSize}`}>
+				<p className={`font-primary font-semibold italic mt-1 text-red-500 ${errorSize}`}>
 					{error}
 				</p>
 			)}

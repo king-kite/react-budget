@@ -19,6 +19,15 @@ import {
 import { Modal } from "../../components/common";
 import { UNCATEGORIZED_ID, UNCATEGORIZED_NAME } from "../../utils";
 
+function checkDate({ startDate, endDate, date }) {
+	const start_date = new Date(startDate);
+	const end_date = new Date(endDate);
+	const value_date = new Date(date);
+
+	if (start_date <= value_date && value_date <= end_date) return true;
+	else return false;
+}
+
 const Budgets = () => {
 	const [data, setData] = useState({});
 	const [errors, setErrors] = useState({});
@@ -39,19 +48,11 @@ const Budgets = () => {
 
 	const [
 		addBudget,
-		{
-			error: addError,
-			isLoading: addLoading,
-			status: addStatus,
-		},
+		{ error: addError, isLoading: addLoading, status: addStatus },
 	] = useAddBudgetMutation();
 	const [
 		editBudget,
-		{
-			error: editError,
-			isLoading: editLoading,
-			status: editStatus,
-		},
+		{ error: editError, isLoading: editLoading, status: editStatus },
 	] = useEditBudgetMutation();
 
 	const handleChange = useCallback(({ target: { name, value } }) => {
@@ -77,9 +78,9 @@ const Budgets = () => {
 			setModalVisible(false);
 			setData({});
 		} else if (addStatus === "rejected" && addError) {
-			console.log("ADD ERROR :>>", addError)
+			console.log("ADD ERROR :>>", addError);
 		}
-	}, [addError, addStatus, dispatch])
+	}, [addError, addStatus, dispatch]);
 
 	useEffect(() => {
 		if (editStatus === "fulfilled") {
@@ -93,18 +94,43 @@ const Budgets = () => {
 			setModalVisible(false);
 			setData({});
 		} else if (editStatus === "rejected" && editError) {
-			console.log("EDIT ERROR :>>", editError)
+			console.log("EDIT ERROR :>>", editError);
 		}
-	}, [editError, editStatus, dispatch])
+	}, [editError, editStatus, dispatch]);
 
 	const handleAddBudget = useCallback(
 		(value) => {
 			let isValid = true;
-			const exists = budgets.find((budget) => budget.name === value.name);
-			if (exists) {
+			const budget = budgets.find(
+				(budget) =>
+					(budget.name === value.name) &&
+					(
+						checkDate({
+							startDate: value.start_date,
+							endDate: value.end_date,
+							date: budget.start_date,
+						}) ||
+						checkDate({
+							startDate: value.start_date,
+							endDate: value.end_date,
+							date: budget.end_date,
+						}) || 
+						checkDate({
+							startDate: budget.start_date,
+							endDate: budget.end_date,
+							date: value.start_date,
+						}) ||
+						checkDate({
+							startDate: budget.start_date,
+							endDate: budget.end_date,
+							date: value.end_date,
+						})
+					)
+			);
+			if (budget) {
 				setErrors((prevState) => ({
 					...prevState,
-					name: `Budget with name \"${value.name}\" already exists!`,
+					name: `Budget with name \"${budget.name}\" already exists in the specified period of time => ${budget.start_date} - ${budget.end_date} !`,
 				}));
 				isValid = false;
 			}
@@ -127,13 +153,36 @@ const Budgets = () => {
 	const handleUpdateBudget = useCallback(
 		(value) => {
 			let isValid = true;
-			const exists = budgets.find(
-				(budget) => budget.name === value.name && budget.id !== value.id
+			const budget = budgets.find(
+				(budget) =>
+					(budget.name === value.name) && (budget.id !== value.id) &&
+					(
+						checkDate({
+							startDate: value.start_date,
+							endDate: value.end_date,
+							date: budget.start_date,
+						}) ||
+						checkDate({
+							startDate: value.start_date,
+							endDate: value.end_date,
+							date: budget.end_date,
+						}) || 
+						checkDate({
+							startDate: budget.start_date,
+							endDate: budget.end_date,
+							date: value.start_date,
+						}) ||
+						checkDate({
+							startDate: budget.start_date,
+							endDate: budget.end_date,
+							date: value.end_date,
+						})
+					)
 			);
-			if (exists) {
+			if (budget) {
 				setErrors((prevState) => ({
 					...prevState,
-					name: `Budget with name \"${value.name}\" already exists!`,
+					name: `Budget with name \"${budget.name}\" already exists in the specified period of time => ${budget.start_date} - ${budget.end_date} !`,
 				}));
 				isValid = false;
 			}
@@ -148,7 +197,7 @@ const Budgets = () => {
 				isValid = false;
 			}
 
-			if (isValid === true) editBudget(value)
+			if (isValid === true) editBudget(value);
 		},
 		[dispatch, budgets, editBudget]
 	);
@@ -182,35 +231,44 @@ const Budgets = () => {
 			{(budgets && budgets.length > 0) || (expenses && expenses.length > 0) ? (
 				<>
 					<div className="gap-4 grid grid-cols-1 sm:gap-5 md:gap-6 md:grid-cols-2 lg:gap-3 lg:grid-cols-3">
-						{budgets && budgets.map((budget, index) => {
-							const currentAmount = expenses ? expenses.reduce((totalAmount, expense) => {
-								if (expense.budgetId === budget.id)
-									return parseFloat(totalAmount) + parseFloat(expense.amount);
-								else return totalAmount;
-							}, 0) : 0;
+						{budgets &&
+							budgets.map((budget, index) => {
+								const currentAmount = expenses
+									? expenses.reduce((totalAmount, expense) => {
+											if (expense.budgetId === budget.id)
+												return (
+													parseFloat(totalAmount) + parseFloat(expense.amount)
+												);
+											else return totalAmount;
+									  }, 0)
+									: 0;
 
-							return (
-								<div key={index}>
-									<BudgetCard
-										{...budget}
-										bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
-										currentAmount={currentAmount}
-										updateBudget={(value) => {
-											setData(value);
-											setErrors({});
-											setEditMode(true);
-											setModalVisible(true);
-										}}
-									/>
-								</div>
-							);
-						})}
+								return (
+									<div key={index}>
+										<BudgetCard
+											{...budget}
+											bg={(index + 1) % 2 === 0 ? "bg-white" : "bg-gray-100"}
+											currentAmount={currentAmount}
+											updateBudget={(value) => {
+												setData(value);
+												setErrors({});
+												setEditMode(true);
+												setModalVisible(true);
+											}}
+										/>
+									</div>
+								);
+							})}
 					</div>
 					<div className="gap-4 grid grid-cols-1 my-4 sm:gap-5 sm:my-5 md:gap-6 md:my-6 md:grid-cols-2 lg:gap-3 lg:my-3 lg:grid-cols-3">
 						<UncategorizedBudgetCard
-							expenses={expenses ? expenses.filter(
-								(expense) => expense.budgetId === UNCATEGORIZED_ID
-							) : []}
+							expenses={
+								expenses
+									? expenses.filter(
+											(expense) => expense.budgetId === UNCATEGORIZED_ID
+									  )
+									: []
+							}
 						/>
 						<TotalCard expenses={expenses || []} budgets={budgets} />
 					</div>

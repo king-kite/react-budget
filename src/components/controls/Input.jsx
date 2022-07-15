@@ -126,7 +126,7 @@ const Input = ({
 			</div>
 			{error && (
 				<p
-					className={`capitalize font-secondary font-semibold italic mt-1 text-red-500 ${errorSize}`}
+					className={`font-secondary font-semibold italic mt-1 text-red-500 ${errorSize}`}
 				>
 					{error}
 				</p>
