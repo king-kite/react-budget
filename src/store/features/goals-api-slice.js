@@ -111,8 +111,8 @@ const goalsApi = baseApi.injectEndpoints({
 								const notifications = await getDocs(
 									query(
 										collection(db, "notifications"),
-										where("data_type", "==", "goal"),
 										where("data_id", "==", goal_id),
+										where("data_type", "==", "goal"),
 										where("user", "==", user.uid)
 									)
 								);

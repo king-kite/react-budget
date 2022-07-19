@@ -126,9 +126,9 @@ export async function checkNotificationExists({
 		const notes = await getDocs(
 			query(
 				collection(db, "notifications"),
-				where("data_type", "==", data_type),
 				where("data_id", "==", data_id),
 				where("user", "==", user.uid),
+				where("data_type", "==", data_type),
 				where("date_number", "==", date_number)
 			)
 		);

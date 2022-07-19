@@ -164,8 +164,8 @@ const budgetsApi = baseApi.injectEndpoints({
 								const notifications = await getDocs(
 									query(
 										collection(db, "notifications"),
-										where("data_type", "==", "budget"),
 										where("data_id", "==", budget_id),
+										where("data_type", "==", "budget"),
 										where("user", "==", user.uid)
 									)
 								);
@@ -235,8 +235,8 @@ const budgetsApi = baseApi.injectEndpoints({
 							const expenses_docs = await getDocs(
 								query(
 									expensesRef,
-									where("user", "==", user.uid),
 									where("budgetId", "==", payload),
+									where("user", "==", user.uid),
 									orderBy("update_date", "desc")
 								)
 							);

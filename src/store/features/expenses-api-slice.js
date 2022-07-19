@@ -131,8 +131,8 @@ const expensesApi = baseApi.injectEndpoints({
 						const expenses = await getDocs(
 							query(
 								expensesRef,
-								where("user", "==", user.uid),
-								where("budgetId", "==", payload)
+								where("budgetId", "==", payload),
+								where("user", "==", user.uid)
 							)
 						);
 
@@ -266,8 +266,8 @@ const expensesApi = baseApi.injectEndpoints({
 						const expenses = await getDocs(
 							query(
 								expensesRef,
-								where("user", "==", user.uid),
 								where("budgetId", "==", payload),
+								where("user", "==", user.uid),
 								orderBy("update_date", "desc")
 							)
 						);
