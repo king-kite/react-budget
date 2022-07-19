@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // match docs in the budgets collection
+    match /budgets/{budget} {
+      allow write: if request.auth != null;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+    // match docs in the expenses collection
+    match /expenses/{expense} {
+      allow write: if request.auth != null;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+    // match docs in the goals collection
+    match /goals/{goal} {
+      allow write: if request.auth != null;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+    // match docs in the income collection
+    match /income/{transaction} {
+      allow write: if request.auth != null;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+    // match docs in the logs collection
+    match /logs/{log} {
+      allow write: if request.auth != null;
+      allow read, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+    // match docs in the notifications collection
+    match /notifications/{notification} {
+      allow write: if request.auth != null;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+    // match docs in the receipts collection
+    match /receipts/{receipt} {
+      allow write: if request.auth != null;
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.user;
+    }
+
+  }
+}

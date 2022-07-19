@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // match the receipts folder
+    match /users/{userEmail}/{userId} {
+      allow read, write, delete: if request.auth != null && request.auth.token.email == userEmail;
+    }
+
+    // match the receipts folder
+    match /receipts/{userEmail}/{receiptId} {
+      allow read, write, delete: if request.auth != null && request.auth.token.email == userEmail;
+    }
+
+  }
+}
