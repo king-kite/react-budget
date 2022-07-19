@@ -79,6 +79,16 @@
         {
           "fieldPath": "user",
           "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "user",
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "date",
