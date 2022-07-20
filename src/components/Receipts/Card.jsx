@@ -46,7 +46,7 @@ const Card = ({
 									border="border border-blue-500"
 									caps
 									color="text-blue-700"
-									focus="focus:ring-1 focus:ring-offset-1 focus:ring-blue-100"
+									focus="focus:ring-2 focus:ring-offset-2 focus:ring-blue-200"
 									IconLeft={FaPen}
 									onClick={() =>
 										updateReceipt({
@@ -67,7 +67,7 @@ const Card = ({
 									border="border border-red-500"
 									caps
 									color="text-red-500"
-									focus="focus:ring-1 focus:ring-offset-1 focus:ring-red-100"
+									focus="focus:ring-2 focus:ring-offset-2 focus:ring-red-200"
 									onClick={() => deleteReceipt({ id, title })}
 									IconLeft={FaTrash}
 									rounded="rounded-lg"
@@ -82,7 +82,7 @@ const Card = ({
 							border="border border-green-500"
 							caps
 							color="text-green-500"
-							focus="focus:ring-1 focus:ring-offset-1 focus:ring-green-100"
+							focus="focus:ring-2 focus:ring-offset-2 focus:ring-green-200"
 							onClick={() => {
 								downloadFile(file, title)
 							}}

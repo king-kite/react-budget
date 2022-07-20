@@ -73,7 +73,7 @@ const expensesApi = baseApi.injectEndpoints({
 							type: "create",
 							message: `${toCapitalize(
 								expense.title
-							)} expense was added to the ${toCapitalize(budgetName)} budget.`,
+							)} expense was added to the ${toCapitalize(payload.budgetName)} budget.`,
 						});
 
 						return { data: expense };
@@ -102,7 +102,7 @@ const expensesApi = baseApi.injectEndpoints({
 						generateLog({
 							type: "delete",
 							message: `${toCapitalize(expense.budgetName)} budget expense \'${
-								expense.title
+								toCapitalize(expense.title)
 							}\' was deleted.`,
 						});
 

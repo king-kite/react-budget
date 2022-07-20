@@ -89,6 +89,7 @@ const BudgetExpenses = () => {
 			setModalVisible(false);
 			setData({});
 		} else if (addStatus === "rejected" && addError) {
+			setModalVisible(false)
 			dispatch(open({
 				type: "danger",
 				message: String(addError.detail)
@@ -110,6 +111,7 @@ const BudgetExpenses = () => {
 			setData({});
 			setEditMode(false);
 		} else if (editStatus === "rejected" && editError) {
+			setModalVisible(false)
 			dispatch(open({
 				type: "danger",
 				message: String(editError.detail)

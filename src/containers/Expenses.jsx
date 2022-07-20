@@ -172,6 +172,7 @@ const AllExpenses = () => {
 			setModalVisible(false);
 			setData({});
 		} else if (addStatus === "rejected" && addError) {
+			setModalVisible(false)
 			dispatch(open({
 				type: "danger",
 				message: String(addError.detail)
@@ -191,6 +192,7 @@ const AllExpenses = () => {
 			setData({});
 			setEditMode(false);
 		} else if (editStatus === "rejected" && editError) {
+			setModalVisible(false)
 			dispatch(open({
 				type: "danger",
 				message: String(editError.detail)

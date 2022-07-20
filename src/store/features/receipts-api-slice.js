@@ -76,11 +76,11 @@ const receiptsApi = baseApi.injectEndpoints({
 
 					generateLog({
 						type: "delete",
-						message: "Receipt was deleted",
+						message: `The \'${toCapitalize(receiptInfo.title)}\' receipt was deleted.`,
 					});
 
 					return {
-						data: { detail: `Receipt ${receiptInfo.title} was deleted.` },
+						data: { detail: `Receipt ${toCapitalize(receiptInfo.title)} was deleted successfuly.` },
 					};
 				} catch (error) {
 					return { error: { detail: error?.code || error?.message } };
