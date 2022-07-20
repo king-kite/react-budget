@@ -24,6 +24,7 @@ const Form = ({ onSuccess }) => {
 				type: "success",
 				message: "Password updated successfully"
 			}))
+			passwordRef.current.value = ""
 			onSuccess()
 		} else if (status === "rejected" && error) {
 			setErrors(prevState => ({
