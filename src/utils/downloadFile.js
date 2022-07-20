@@ -1,6 +1,11 @@
 const downloadFile = async (url, file_name) => {
     try {
-      const response = await fetch(url, {method: "GET"});
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        }
+      });
       const data = await response.blob();
 
       if (response.status === 200 && data) {
