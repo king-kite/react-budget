@@ -1,6 +1,11 @@
+import { useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { FaCloudDownloadAlt, FaPen, FaTrash } from "react-icons/fa";
-import { Button } from "../controls"
-import { currencyFormatter, toCapitalize, downloadFile } from "../../utils";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../../store/firebase";
+import { open } from "../../store/features/alert-slice";
+import { Button } from "../controls";
+import { currencyFormatter, toCapitalize } from "../../utils";
 
 const Card = ({
 	amount,
@@ -9,11 +14,57 @@ const Card = ({
 	date,
 	description,
 	file,
+	path,
 	title,
 	updateReceipt,
 	deleteReceipt,
-	showEditDeleteButton=true
-}) => (
+	showEditDeleteButton = true,
+}) => {
+	const dispatch = useDispatch();
+
+	const handleDownload = useCallback(async () => {
+		if (path) {
+
+			getDownloadURL(ref(storage, path))
+				.then((url) => {
+					console.log("URL :>>", url)
+					// This can be downloaded directly:
+					// const xhr = new XMLHttpRequest();
+					// xhr.responseType = "blob";
+					// xhr.onload = (event) => {
+					// 	const blob = xhr.response;
+					// };
+					// xhr.open("GET", url);
+					// xhr.send();
+        	const link = document.createElement("a");
+        	link.href = url;
+        	link.setAttribute("download", title);
+        	document.body.appendChild(link);
+        	link.click();
+				})
+				.catch((error) => {
+					dispatch(
+						open({
+							type: "danger",
+							message:
+								error?.code ||
+								error?.message ||
+								"A server error occurred. Unable to download receipt document.",
+						})
+					);
+				});
+		} else {
+			dispatch(
+				open({
+					type: "danger",
+					message:
+						"Unable to download receipt document. Path to document does not exist!",
+				})
+			);
+		}
+	}, [path]);
+
+	return (
 		<div
 			className={`${bg} border border-gray-400 flex flex-col justify-between h-full p-4 relative rounded-lg shadow-lg w-full`}
 		>
@@ -37,62 +88,61 @@ const Card = ({
 				<p className="my-1 text-gray-500 text-sm md:text-base">{description}</p>
 			</div>
 
-				<div className="gap-4 grid grid-cols-2 pt-3 md:gap-5 w-full">
-					{showEditDeleteButton && (
-						<>
-							<div>
-								<Button
-									bg="bg-blue-50 hover:bg-blue-200"
-									border="border border-blue-500"
-									caps
-									color="text-blue-700"
-									focus="focus:ring-2 focus:ring-offset-2 focus:ring-blue-200"
-									IconLeft={FaPen}
-									onClick={() =>
-										updateReceipt({
-											id,
-											title: toCapitalize(title),
-											date: new Date(date).toLocaleDateString('en-CA'),
-											description,
-											amount,
-										})
-									}
-									rounded="rounded-lg"
-									title="Edit"
-								/>
-							</div>
-							<div>
-								<Button
-									bg="bg-red-100 hover:bg-red-200"
-									border="border border-red-500"
-									caps
-									color="text-red-500"
-									focus="focus:ring-2 focus:ring-offset-2 focus:ring-red-200"
-									onClick={() => deleteReceipt({ id, title })}
-									IconLeft={FaTrash}
-									rounded="rounded-lg"
-									title="delete"
-								/>
-							</div>
-						</>
-					)}
-					<div>
-						<Button
-							bg="bg-green-100 hover:bg-green-200"
-							border="border border-green-500"
-							caps
-							color="text-green-500"
-							focus="focus:ring-2 focus:ring-offset-2 focus:ring-green-200"
-							onClick={() => {
-								downloadFile(file, title)
-							}}
-							IconLeft={FaCloudDownloadAlt}
-							rounded="rounded-lg"
-							title="download"
-						/>
-					</div>
+			<div className="gap-4 grid grid-cols-2 pt-3 md:gap-5 w-full">
+				{showEditDeleteButton && (
+					<>
+						<div>
+							<Button
+								bg="bg-blue-50 hover:bg-blue-200"
+								border="border border-blue-500"
+								caps
+								color="text-blue-700"
+								focus="focus:ring-2 focus:ring-offset-2 focus:ring-blue-200"
+								IconLeft={FaPen}
+								onClick={() =>
+									updateReceipt({
+										id,
+										title: toCapitalize(title),
+										date: new Date(date).toLocaleDateString("en-CA"),
+										description,
+										amount,
+									})
+								}
+								rounded="rounded-lg"
+								title="Edit"
+							/>
+						</div>
+						<div>
+							<Button
+								bg="bg-red-100 hover:bg-red-200"
+								border="border border-red-500"
+								caps
+								color="text-red-500"
+								focus="focus:ring-2 focus:ring-offset-2 focus:ring-red-200"
+								onClick={() => deleteReceipt({ id, title })}
+								IconLeft={FaTrash}
+								rounded="rounded-lg"
+								title="delete"
+							/>
+						</div>
+					</>
+				)}
+				<div>
+					<Button
+						bg="bg-green-100 hover:bg-green-200"
+						border="border border-green-500"
+						caps
+						color="text-green-500"
+						focus="focus:ring-2 focus:ring-offset-2 focus:ring-green-200"
+						onClick={handleDownload}
+						IconLeft={FaCloudDownloadAlt}
+						rounded="rounded-lg"
+						title="download"
+					/>
 				</div>
+			</div>
 		</div>
 	);
+};
 
 export default Card;
