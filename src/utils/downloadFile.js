@@ -3,6 +3,7 @@ const downloadFile = async (url, file_name) => {
       const response = await fetch(url, {
         method: "GET",
         headers: {
+          "Access-Control-Allow-Headers": "*",
           "Access-Control-Allow-Origin": "*",
         }
       });
