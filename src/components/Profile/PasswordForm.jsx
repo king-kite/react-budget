@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { FaCheckCircle, FaEraser } from "react-icons/fa"
 import { useDispatch } from "react-redux"
-import { auth } from "../../store/firebase"
 import { open } from "../../store/features/alert-slice"
 import { useUpdatePasswordMutation } from "../../store/features/auth-api-slice"
 import { Button, Input } from "../controls"
@@ -16,7 +15,7 @@ const Form = ({ onSuccess }) => {
 	const [updatePassword, { isLoading, status, error }] = useUpdatePasswordMutation()
 
 	const handleSubmit = useCallback((password) => {
-		updatePassword(auth.currentUser, password)	
+		updatePassword(password)	
 	}, [updatePassword])
 
 	useEffect(() => {
