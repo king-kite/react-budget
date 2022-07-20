@@ -26,15 +26,6 @@ const Card = ({
 		if (path) {
 			getDownloadURL(ref(storage, path))
 				.then((url) => {
-					// This can be downloaded directly:
-					// const xhr = new XMLHttpRequest();
-					// xhr.responseType = "blob";
-					// xhr.onload = (event) => {
-					// 	const blob = xhr.response;
-					// };
-					// xhr.open("GET", url);
-					// xhr.send();
-
 					const link_url = window.URL.createObjectURL(new Blob([url]));
 					const link = document.createElement("a");
 					link.href = link_url;
