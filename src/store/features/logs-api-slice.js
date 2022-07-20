@@ -80,7 +80,7 @@ const logsApi = baseApi.injectEndpoints({
 								id: doc.id,
 								message: info.message,
 								type: info.type,
-								date: info.date.toDate().toDateString(),
+								date: info.date.toDate(),
 							};
 						});
 

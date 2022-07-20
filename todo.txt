@@ -1,1 +1,2 @@
 Handle errors better
+Reverse the form buttons 'clear' and 'submit' for smaller screens

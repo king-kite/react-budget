@@ -1,6 +1,6 @@
 import { Button } from "../controls";
 
-const Log = ({ id, timestamp, isLoading, type, message, deleteLog }) => {
+const Log = ({ id, date, isLoading, type, message, deleteLog }) => {
 
 	const borderColor =
 		type === "delete"
@@ -10,6 +10,12 @@ const Log = ({ id, timestamp, isLoading, type, message, deleteLog }) => {
 			: type === "update"
 			? "border-blue-600"
 			: "border-gray-600";
+
+	const _date = new Date(date)
+	const minutes = _date.getMinutes();
+	const hours = _date.getHours();
+	const _hour = hours > 12 ? hours - 12 : hours;
+	const AM_PM = hours > 12 ? "PM" : "AM";
 
 	return (
 		<div
@@ -23,14 +29,14 @@ const Log = ({ id, timestamp, isLoading, type, message, deleteLog }) => {
 			<div className="flex flex-col mx-2 w-full md:flex-row md:justify-between">
 				<div>
 					<h6 className="capitalize font-medium mb-1 text-gray-400 text-xs md:text-sm">
-						{timestamp}
+						{_date.toDateString()}, {`${_hour}:${minutes} ${AM_PM}`}
 					</h6>
 					<p className="font-medium my-1 text-gray-500 text-xs md:text-sm">
 						{message}
 					</p>
 				</div>
 				<div className="flex items-center mt-2 md:mt-0">
-					<div className="mx-2 sm:mx-3 md:mx-4">
+					<div className="md:mx-4">
 						<Button
 							bg="bg-red-500 hover:bg-red-600"
 							bold="normal"

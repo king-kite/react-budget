@@ -24,10 +24,8 @@ const Card = ({
 
 	const handleDownload = useCallback(async () => {
 		if (path) {
-
 			getDownloadURL(ref(storage, path))
 				.then((url) => {
-					console.log("URL :>>", url)
 					// This can be downloaded directly:
 					// const xhr = new XMLHttpRequest();
 					// xhr.responseType = "blob";
@@ -36,11 +34,13 @@ const Card = ({
 					// };
 					// xhr.open("GET", url);
 					// xhr.send();
-        	const link = document.createElement("a");
-        	link.href = url;
-        	link.setAttribute("download", title);
-        	document.body.appendChild(link);
-        	link.click();
+
+					const link_url = window.URL.createObjectURL(new Blob([url]));
+					const link = document.createElement("a");
+					link.href = link_url;
+					link.setAttribute("download", title);
+					document.body.appendChild(link);
+					link.click();
 				})
 				.catch((error) => {
 					dispatch(
