@@ -16,7 +16,7 @@ const Form = ({ onSuccess }) => {
 	const [updatePassword, { isLoading, status, error }] = useUpdatePasswordMutation()
 
 	const handleSubmit = useCallback((password) => {
-		updatePassword(auth, password)	
+		updatePassword(auth.currentUser, password)	
 	}, [updatePassword])
 
 	useEffect(() => {
